@@ -51,6 +51,15 @@ export const problema = {
   ],
 }
 
+export const solucion = {
+  titulo: 'Con Akkorde-on, esto se acabó',
+  beneficios: [
+    { titulo: 'Encuentra tu plan', texto: 'Conciertos de culto que no salen en otras webs.' },
+    { titulo: 'Paga lo justo', texto: 'Sin reventa y sin cargos sorpresa.' },
+    { titulo: 'Entra seguro', texto: 'Tu QR es único y solo sirve una vez.' },
+  ],
+}
+
 export const comoFunciona = [
   { paso: 1, titulo: 'Busca', texto: 'Encuentra tu concierto por fecha, sala o estilo.' },
   { paso: 2, titulo: 'Compra', texto: 'Paga en un minuto, sin cargos ocultos.' },
