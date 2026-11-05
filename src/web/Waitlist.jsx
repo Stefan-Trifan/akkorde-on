@@ -12,7 +12,7 @@ function Waitlist() {
   }
 
   return (
-    <section id="avisame" className="scroll-mt-20 bg-acento py-16 text-fondo">
+    <section id="avisame" className="scroll-mt-32 bg-acento py-16 text-fondo">
       <div className="mx-auto flex max-w-xl flex-col gap-5 px-5 text-center">
         <h2 className="text-3xl font-extrabold">¿Te avisamos cuando salga?</h2>
         {enviado ? (

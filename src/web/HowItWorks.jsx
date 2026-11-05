@@ -3,7 +3,7 @@ import { comoFunciona, solucion } from '../data/textos.js'
 // Cómo funciona: la solución en 3 beneficios y los 4 pasos para comprar
 function HowItWorks() {
   return (
-    <section id="como-funciona" className="scroll-mt-20 bg-superficie py-16">
+    <section id="como-funciona" className="scroll-mt-32 bg-superficie py-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5">
         <div className="flex flex-col gap-4">
           <h2 className="text-3xl font-extrabold text-texto">{solucion.titulo}</h2>

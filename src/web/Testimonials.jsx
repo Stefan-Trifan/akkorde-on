@@ -1,26 +1,31 @@
-import { ENSENAR_PENDIENTES, opiniones } from '../data/pendientes.js'
-import Pending from './Pending.jsx'
+import { opiniones } from '../data/provisional.js'
 
-// Opiniones reales sacadas de la encuesta (sin nombres)
+// ---------- Constantes ----------
+// Huecos que se ven mientras no lleguen las frases reales de la encuesta
+const NUM_HUECOS = 3
+
+// Opiniones reales sacadas de la encuesta (sin nombres); si aún no hay, tarjetas «Próximamente»
 function Testimonials() {
-  if (opiniones.length === 0 && !ENSENAR_PENDIENTES) return null
+  const hayOpiniones = opiniones.length > 0
 
   return (
     <section className="bg-superficie py-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5">
         <h2 className="text-3xl font-extrabold text-texto">Lo que nos habéis contado</h2>
-        {opiniones.length > 0 ? (
-          <ul className="grid gap-4 md:grid-cols-2">
-            {opiniones.map((opinion) => (
-              <li key={opinion.texto} className="rounded-2xl border border-borde bg-fondo p-5 text-texto">
-                <p>«{opinion.texto}»</p>
-                <p className="mt-2 text-xs text-suave">Respuesta anónima de nuestra encuesta</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <Pending texto="3-4 frases reales de la encuesta (Nico, 06-11)" />
-        )}
+        <ul className="grid gap-4 md:grid-cols-3">
+          {hayOpiniones
+            ? opiniones.map((opinion) => (
+                <li key={opinion.texto} className="rounded-2xl border border-borde bg-fondo p-5 text-texto">
+                  <p>«{opinion.texto}»</p>
+                  <p className="mt-2 text-xs text-suave">Respuesta anónima de nuestra encuesta</p>
+                </li>
+              ))
+            : Array.from({ length: NUM_HUECOS }, (_, i) => (
+                <li key={i} className="rounded-2xl border border-dashed border-borde bg-fondo p-5 text-suave">
+                  <p>Próximamente: lo que nos contáis en nuestra encuesta.</p>
+                </li>
+              ))}
+        </ul>
       </div>
     </section>
   )
