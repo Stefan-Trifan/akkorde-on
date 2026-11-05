@@ -18,7 +18,7 @@ function PriceComparison() {
               <span className="font-bold">{formatearPrecio(fila.precioFinal)}</span>
             </div>
             <div
-              className={`h-3 rounded-full ${fila.plataforma === 'Akkorde-on' ? 'bg-acento' : 'bg-borde'}`}
+              className={`h-3 rounded-full ${fila.plataforma === 'Akkorde-on' ? 'bg-acento' : 'bg-suave'}`}
               style={{ width: `${(fila.precioFinal / maximo) * 100}%` }}
             />
           </li>
