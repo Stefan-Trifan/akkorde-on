@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Colores de Akkorde-on (provisionales hasta tener la plantilla de Canva) */
+@theme {
+  --color-fondo: #0f0e17;
+  --color-superficie: #1c1b29;
+  --color-borde: #2e2c42;
+  --color-texto: #fffffe;
+  --color-suave: #a7a9be;
+  --color-acento: #ff8906;
+  --color-exito: #2cb67d;
+}
