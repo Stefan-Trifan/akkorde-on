@@ -10,3 +10,8 @@
   --color-acento: #ff8906;
   --color-exito: #2cb67d;
 }
+
+/* Los enlaces del menú bajan suavemente hasta cada sección */
+html {
+  scroll-behavior: smooth;
+}
