@@ -69,5 +69,6 @@ export const comoFunciona = [
 
 export const avisame = {
   boton: 'Avísame',
-  mensaje: '¡Hecho! Te avisaremos en cuanto salgan las entradas.',
+  privacidad: 'Proyecto universitario de U-tad. Solo usamos tu correo para avisarte y lo borramos al acabar el curso.',
+  sinFormulario: 'Muy pronto podrás apuntarte aquí.',
 }
