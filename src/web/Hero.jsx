@@ -2,7 +2,7 @@ import { avisame, inicio } from '../data/textos.js'
 import { GASTOS_GESTION, formatearPrecio } from '../app/formato.js'
 
 // Inicio de la página: eslogan, qué es, 3 puntos clave y botones
-function Hero() {
+function Hero({ onAbrirAvisame }) {
   return (
     <section id="inicio" className="mx-auto flex max-w-6xl flex-col gap-6 px-5 pb-16 pt-28 md:pt-36">
       <span className="w-fit rounded-full bg-acento/15 px-3 py-1 text-sm font-semibold text-acento">
@@ -24,9 +24,9 @@ function Hero() {
         <a href="#como-funciona" className="rounded-2xl border border-borde px-5 py-3 font-bold text-texto hover:border-acento">
           Cómo funciona
         </a>
-        <a href="#avisame" className="rounded-2xl bg-acento px-5 py-3 font-bold text-fondo hover:brightness-110">
+        <button type="button" onClick={onAbrirAvisame} className="rounded-2xl bg-acento px-5 py-3 font-bold text-fondo hover:brightness-110">
           {avisame.boton}
-        </a>
+        </button>
       </div>
     </section>
   )
