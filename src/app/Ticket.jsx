@@ -37,24 +37,13 @@ function Confirmacion({ titulo, textoSi, onConfirmar, onCancelar, children }) {
   )
 }
 
-// Pantalla 5: la entrada comprada, con el QR difuminado hasta 1 h antes y opción de revender
-function Ticket({ entrada, onBuscar, onRevender, onQuitarReventa }) {
+// Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender
+function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
   const [qrVisible, setQrVisible] = useState(false)
   // Qué se está confirmando: null, 'revender' o 'quitar'
   const [confirmando, setConfirmando] = useState(null)
   // Solo para la demo: hacer como si faltara 1 h para el concierto
   const [simularHora, setSimularHora] = useState(false)
-
-  if (!entrada) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
-        <p className="text-suave">Todavía no tienes entradas.</p>
-        <button type="button" onClick={onBuscar} className="font-bold text-acento">
-          Buscar conciertos
-        </button>
-      </div>
-    )
-  }
 
   const { concierto, codigo, enReventa, gastosExtra = 0 } = entrada
   const pagado = precioFinal(concierto.precio)
@@ -78,7 +67,10 @@ function Ticket({ entrada, onBuscar, onRevender, onQuitarReventa }) {
 
   return (
     <div className="flex flex-col gap-5 p-5">
-      <h1 className="pt-4 text-2xl font-extrabold text-texto">Mi entrada</h1>
+      <button type="button" onClick={onVolver} className="self-start pt-4 text-suave hover:text-texto">
+        ← Mis entradas
+      </button>
+      <h1 className="text-2xl font-extrabold text-texto">Mi entrada</h1>
 
       <article className="overflow-hidden rounded-3xl bg-crema text-fondo">
         <img src={concierto.imagen} alt="" className="aspect-[8/3] w-full object-cover" />

@@ -3,6 +3,7 @@ import Home from './Home.jsx'
 import Search from './Search.jsx'
 import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
+import MyTickets from './MyTickets.jsx'
 import Ticket from './Ticket.jsx'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
@@ -12,20 +13,24 @@ import { DISTANCIA_MAX_KM } from './distancia.js'
 const PESTANAS = [
   { pantalla: 'inicio', texto: 'Inicio', icono: '🏠' },
   { pantalla: 'buscar', texto: 'Buscar', icono: '🔍' },
-  { pantalla: 'entrada', texto: 'Mi entrada', icono: '🎟️' },
+  { pantalla: 'entradas', texto: 'Mis entradas', icono: '🎟️' },
 ]
 
-// Vista App: la demo de Akkorde-on como app de móvil (5 pantallas)
+// Vista App: la demo de Akkorde-on como app de móvil
 function AppView() {
   const [pantalla, setPantalla] = useState('inicio')
   const [conciertoElegido, setConciertoElegido] = useState(null)
-  const [entrada, setEntrada] = useState(null)
+  // Todas las entradas compradas y la que está abierta (null = se ve la lista)
+  const [entradas, setEntradas] = useState([])
+  const [idAbierta, setIdAbierta] = useState(null)
   // Pantalla desde la que se abrió la ficha, para que «Volver» regrese ahí
   const [origen, setOrigen] = useState('inicio')
   // Filtro de la búsqueda; vive aquí para no perderlo al volver de la ficha
   const [genero, setGenero] = useState(TODOS)
   // Filtro por distancia en km (empieza al máximo: se ven todos)
   const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
+
+  const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
 
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
@@ -34,15 +39,28 @@ function AppView() {
     setPantalla('concierto')
   }
 
-  // Saca la entrada de la reventa y suma los gastos de gestión (simulado)
-  function quitarReventa() {
-    const gastosExtra = (entrada.gastosExtra ?? 0) + GASTOS_GESTION
-    setEntrada({ ...entrada, enReventa: false, gastosExtra })
+  // Añade una entrada nueva a la lista y la deja abierta para verla
+  function comprarEntrada() {
+    const codigo = crearCodigoEntrada(conciertoElegido)
+    const nueva = { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0 }
+    setEntradas([...entradas, nueva])
+    setIdAbierta(codigo)
   }
 
-  // Guarda la entrada comprada con un código nuevo
-  function comprarEntrada() {
-    setEntrada({ concierto: conciertoElegido, codigo: crearCodigoEntrada(conciertoElegido) })
+  // Cambia algunos datos de una entrada concreta
+  function actualizarEntrada(id, cambios) {
+    setEntradas(entradas.map((entrada) => (entrada.id === id ? { ...entrada, ...cambios } : entrada)))
+  }
+
+  // Saca la entrada de la reventa y suma los gastos de gestión (simulado)
+  function quitarReventa(entrada) {
+    actualizarEntrada(entrada.id, { enReventa: false, gastosExtra: entrada.gastosExtra + GASTOS_GESTION })
+  }
+
+  // Pulsar «Mis entradas» en la barra siempre lleva a la lista
+  function irAPestana(destino) {
+    if (destino === 'entradas') setIdAbierta(null)
+    setPantalla(destino)
   }
 
   return (
@@ -69,16 +87,20 @@ function AppView() {
           <Checkout
             concierto={conciertoElegido}
             onPagar={comprarEntrada}
-            onVerEntrada={() => setPantalla('entrada')}
+            onVerEntrada={() => setPantalla('entradas')}
             onVolver={() => setPantalla('concierto')}
           />
         )}
-        {pantalla === 'entrada' && (
+        {pantalla === 'entradas' && !entradaAbierta && (
+          <MyTickets entradas={entradas} onAbrir={setIdAbierta} onBuscar={() => setPantalla('buscar')} />
+        )}
+        {pantalla === 'entradas' && entradaAbierta && (
           <Ticket
-            entrada={entrada}
-            onBuscar={() => setPantalla('buscar')}
-            onRevender={() => setEntrada({ ...entrada, enReventa: true })}
-            onQuitarReventa={quitarReventa}
+            key={entradaAbierta.id}
+            entrada={entradaAbierta}
+            onVolver={() => setIdAbierta(null)}
+            onRevender={() => actualizarEntrada(entradaAbierta.id, { enReventa: true })}
+            onQuitarReventa={() => quitarReventa(entradaAbierta)}
           />
         )}
       </main>
@@ -88,7 +110,7 @@ function AppView() {
           <button
             key={pestana.pantalla}
             type="button"
-            onClick={() => setPantalla(pestana.pantalla)}
+            onClick={() => irAPestana(pestana.pantalla)}
             aria-current={pantalla === pestana.pantalla ? 'page' : undefined}
             className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-xs ${
               pantalla === pestana.pantalla ? 'text-acento' : 'text-suave'
