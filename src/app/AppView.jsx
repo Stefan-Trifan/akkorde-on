@@ -5,6 +5,7 @@ import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
 import Ticket from './Ticket.jsx'
 import { TODOS, crearCodigoEntrada } from './formato.js'
+import { DISTANCIA_MAX_KM } from './distancia.js'
 
 // ---------- Constantes ----------
 // Pestañas de la barra inferior
@@ -23,8 +24,8 @@ function AppView() {
   const [origen, setOrigen] = useState('inicio')
   // Filtro de la búsqueda; vive aquí para no perderlo al volver de la ficha
   const [genero, setGenero] = useState(TODOS)
-  // Filtro por distancia en km (null = todo Madrid)
-  const [radio, setRadio] = useState(null)
+  // Filtro por distancia en km (empieza al máximo: se ven todos)
+  const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
 
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {

@@ -2,12 +2,10 @@ import { UBICACION_EJEMPLO, salas } from '../data/salas.js'
 
 // ---------- Constantes ----------
 const RADIO_TIERRA_KM = 6371
-// Opciones del filtro por distancia; km null = sin límite
-export const RADIOS = [
-  { km: 1, texto: 'A 1 km' },
-  { km: 2, texto: 'A 2 km' },
-  { km: null, texto: 'Todo Madrid' },
-]
+// Límites de la barra de distancia (km); empieza al máximo para ver todos
+export const DISTANCIA_MIN_KM = 0.5
+export const DISTANCIA_MAX_KM = 10
+export const PASO_KM = 0.5
 
 // Pasa grados a radianes
 function aRadianes(grados) {
@@ -31,7 +29,6 @@ export function distanciaAConcierto(concierto) {
 
 // ¿Está el concierto dentro del radio elegido?
 export function estaDentroDelRadio(concierto, km) {
-  if (km === null) return true
   const distancia = distanciaAConcierto(concierto)
   return distancia !== null && distancia <= km
 }
