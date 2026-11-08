@@ -36,21 +36,26 @@ function Waitlist() {
 
   return (
     <section id="avisame" className="scroll-mt-32 bg-acento py-16 text-fondo">
-      <div className="mx-auto flex max-w-xl flex-col gap-5 px-5 text-center">
-        <h2 className="text-3xl font-extrabold">¿Te avisamos cuando salga?</h2>
+      <div className="mx-auto flex max-w-xl flex-col gap-6 px-5">
+        <div className="flex flex-col gap-2 text-center">
+          <h2 className="text-3xl font-extrabold">¿Te avisamos cuando salga?</h2>
+          <p className="font-semibold">{avisame.subtitulo}</p>
+        </div>
         {TALLY_FORM_ID ? (
-          <iframe
-            data-tally-src={TALLY_EMBED_URL}
-            loading="lazy"
-            width="100%"
-            height="420"
-            title="Formulario Avísame"
-          />
+          // el iframe es transparente: la tarjeta blanca evita que los campos cojan el lima del fondo
+          <div className="rounded-3xl bg-texto p-5 shadow-2xl ring-1 ring-fondo/10 sm:p-8">
+            <iframe
+              data-tally-src={TALLY_EMBED_URL}
+              loading="lazy"
+              width="100%"
+              height="420"
+              title="Formulario Avísame"
+            />
+          </div>
         ) : (
           // sin formulario conectado no se enseña una confirmacion falsa
           <p className="rounded-2xl bg-fondo p-5 font-semibold text-texto">{avisame.sinFormulario}</p>
         )}
-        <p className="text-xs">{avisame.privacidad}</p>
       </div>
     </section>
   )
