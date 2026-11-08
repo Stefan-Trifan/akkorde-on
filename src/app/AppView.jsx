@@ -14,10 +14,11 @@ const PESTANAS = [
   { pantalla: 'inicio', texto: 'Inicio', icono: '🏠' },
   { pantalla: 'buscar', texto: 'Buscar', icono: '🔍' },
   { pantalla: 'entradas', texto: 'Mis entradas', icono: '🎟️' },
+  { pantalla: 'avisame', texto: 'Avísame', icono: '🔔' },
 ]
 
 // Vista App: la demo de Akkorde-on como app de móvil
-function AppView() {
+function AppView({ onAbrirAvisame }) {
   const [pantalla, setPantalla] = useState('inicio')
   const [conciertoElegido, setConciertoElegido] = useState(null)
   // Todas las entradas compradas y la que está abierta (null = se ve la lista)
@@ -59,6 +60,11 @@ function AppView() {
 
   // Pulsar «Mis entradas» en la barra siempre lleva a la lista
   function irAPestana(destino) {
+    // avisame no es una pantalla: abre el formulario sin perder donde estaba el usuario
+    if (destino === 'avisame') {
+      onAbrirAvisame()
+      return
+    }
     if (destino === 'entradas') setIdAbierta(null)
     setPantalla(destino)
   }

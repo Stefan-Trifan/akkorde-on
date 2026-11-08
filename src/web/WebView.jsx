@@ -10,19 +10,19 @@ import Waitlist from './Waitlist.jsx'
 import Footer from './Footer.jsx'
 
 // Vista Web: la página de Akkorde-on para el público, sección a sección
-function WebView() {
+function WebView({ onAbrirAvisame }) {
   return (
     <div className="min-h-dvh bg-fondo text-texto">
-      <Navbar />
+      <Navbar onAbrirAvisame={onAbrirAvisame} />
       <main>
-        <Hero />
+        <Hero onAbrirAvisame={onAbrirAvisame} />
         <Benefits />
         <Problem />
         <HowItWorks />
         <PriceComparison />
         <Testimonials />
         <Faq />
-        <Waitlist />
+        <Waitlist onAbrirAvisame={onAbrirAvisame} />
       </main>
       <Footer />
     </div>

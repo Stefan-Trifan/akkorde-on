@@ -10,7 +10,7 @@ const ENLACES = [
 ]
 
 // Menú fijo arriba: logo, enlaces y botón «Avísame»; pt-14 deja sitio al botón App/Web de Alfredo
-function Navbar() {
+function Navbar({ onAbrirAvisame }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-borde bg-fondo/95 pt-14 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
@@ -26,9 +26,9 @@ function Navbar() {
             </li>
           ))}
         </ul>
-        <a href="#avisame" className="rounded-full bg-acento px-4 py-2 text-sm font-bold text-fondo hover:brightness-110">
+        <button type="button" onClick={onAbrirAvisame} className="rounded-full bg-acento px-4 py-2 text-sm font-bold text-fondo hover:brightness-110">
           {avisame.boton}
-        </a>
+        </button>
       </nav>
     </header>
   )
