@@ -4,7 +4,7 @@ import Search from './Search.jsx'
 import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
 import Ticket from './Ticket.jsx'
-import { TODOS, crearCodigoEntrada } from './formato.js'
+import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
 
 // ---------- Constantes ----------
@@ -32,6 +32,12 @@ function AppView() {
     setConciertoElegido(concierto)
     setOrigen(pantalla)
     setPantalla('concierto')
+  }
+
+  // Saca la entrada de la reventa y suma los gastos de gestión (simulado)
+  function quitarReventa() {
+    const gastosExtra = (entrada.gastosExtra ?? 0) + GASTOS_GESTION
+    setEntrada({ ...entrada, enReventa: false, gastosExtra })
   }
 
   // Guarda la entrada comprada con un código nuevo
@@ -72,6 +78,7 @@ function AppView() {
             entrada={entrada}
             onBuscar={() => setPantalla('buscar')}
             onRevender={() => setEntrada({ ...entrada, enReventa: true })}
+            onQuitarReventa={quitarReventa}
           />
         )}
       </main>
