@@ -1,4 +1,4 @@
-import { conciertos } from '../data/conciertos.js'
+import { eventos } from '../data/eventos.js'
 import { inicio } from '../data/textos.js'
 import ConcertCard from './ConcertCard.jsx'
 
@@ -7,7 +7,7 @@ const NUM_DESTACADOS = 3
 
 // Pantalla 1: logo, eslogan y conciertos destacados (los más próximos)
 function Home({ onElegir }) {
-  const destacados = conciertos.slice(0, NUM_DESTACADOS)
+  const destacados = eventos.slice(0, NUM_DESTACADOS)
 
   return (
     <div className="flex flex-col gap-6 p-5">
