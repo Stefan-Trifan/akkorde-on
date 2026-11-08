@@ -26,7 +26,7 @@ export const cifra = {
 export const ventajas = [
   {
     titulo: 'Precio justo',
-    texto: 'El precio que ves es el que pagas. Sin sorpresas al final.',
+    texto: 'Solo 1 € de gastos. El precio que ves es el que pagas.',
   },
   {
     titulo: 'Entradas seguras',
@@ -34,11 +34,11 @@ export const ventajas = [
   },
   {
     titulo: 'Adiós revendedores',
-    texto: 'Límite de entradas por persona, para que lleguen a quien de verdad va.',
+    texto: 'Si no puedes ir, revendes al precio original y se genera un QR nuevo.',
   },
   {
     titulo: 'Tu plan, fácil',
-    texto: 'Conciertos pequeños y de culto, todos en un mismo sitio.',
+    texto: 'Busca conciertos por género y cerca de ti, todos en un mismo sitio.',
   },
 ]
 
@@ -61,11 +61,20 @@ export const solucion = {
 }
 
 export const comoFunciona = [
-  { paso: 1, titulo: 'Busca', texto: 'Encuentra tu concierto por fecha, sala o estilo.' },
+  { paso: 1, titulo: 'Busca', texto: 'Encuentra tu concierto por género y cercanía.' },
   { paso: 2, titulo: 'Compra', texto: 'Paga en un minuto, sin cargos ocultos.' },
   { paso: 3, titulo: 'Recibe tu QR', texto: 'Te llega al móvil al momento.' },
   { paso: 4, titulo: 'Entra', texto: 'Enseña el QR en la puerta y a disfrutar.' },
 ]
+
+export const encuesta = {
+  datos: [
+    { porcentaje: '61 %', texto: 'se ha encontrado las entradas agotadas.' },
+    { porcentaje: '53 %', texto: 'ha visto precios elevados en la reventa.' },
+    { porcentaje: '48 %', texto: 'ha renunciado a ir a un evento.' },
+  ],
+  fuente: 'Encuesta propia del equipo · 90 respuestas · noviembre de 2026',
+}
 
 export const avisame = {
   boton: 'Avísame',
