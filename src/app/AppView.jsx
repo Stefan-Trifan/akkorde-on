@@ -67,7 +67,13 @@ function AppView() {
             onVolver={() => setPantalla('concierto')}
           />
         )}
-        {pantalla === 'entrada' && <Ticket entrada={entrada} onBuscar={() => setPantalla('buscar')} />}
+        {pantalla === 'entrada' && (
+          <Ticket
+            entrada={entrada}
+            onBuscar={() => setPantalla('buscar')}
+            onRevender={() => setEntrada({ ...entrada, enReventa: true })}
+          />
+        )}
       </main>
 
       <nav className="flex border-t border-borde bg-superficie">
