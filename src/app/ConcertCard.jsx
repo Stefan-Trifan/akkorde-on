@@ -1,7 +1,10 @@
 import { formatearFecha, formatearPrecio, precioFinal } from './formato.js'
+import { distanciaAConcierto, formatearDistancia } from './distancia.js'
 
 // Tarjeta de un concierto en las listas (inicio y búsqueda)
 function ConcertCard({ concierto, onElegir }) {
+  const distancia = distanciaAConcierto(concierto)
+
   return (
     <button
       type="button"
@@ -14,6 +17,7 @@ function ConcertCard({ concierto, onElegir }) {
         <span className="font-bold text-texto">{concierto.nombre}</span>
         <span className="text-sm text-suave">
           {concierto.sala} · {formatearFecha(concierto.fecha)}
+          {distancia !== null && ` · ${formatearDistancia(distancia)}`}
         </span>
         <span className="text-sm font-semibold text-texto">{formatearPrecio(precioFinal(concierto.precio))}</span>
       </div>

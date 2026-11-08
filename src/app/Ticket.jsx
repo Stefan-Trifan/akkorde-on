@@ -20,7 +20,7 @@ function Ticket({ entrada, onBuscar }) {
     <div className="flex flex-col gap-5 p-5">
       <h1 className="pt-4 text-2xl font-extrabold text-texto">Mi entrada</h1>
 
-      <article className="overflow-hidden rounded-3xl bg-texto text-fondo">
+      <article className="overflow-hidden rounded-3xl bg-crema text-fondo">
         <img src={concierto.imagen} alt="" className="aspect-[8/3] w-full object-cover" />
         <div className="flex flex-col items-center gap-3 p-5">
           <div className="text-center">

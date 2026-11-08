@@ -5,6 +5,7 @@ import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
 import Ticket from './Ticket.jsx'
 import { TODOS, crearCodigoEntrada } from './formato.js'
+import { DISTANCIA_MAX_KM } from './distancia.js'
 
 // ---------- Constantes ----------
 // Pestañas de la barra inferior
@@ -23,6 +24,8 @@ function AppView() {
   const [origen, setOrigen] = useState('inicio')
   // Filtro de la búsqueda; vive aquí para no perderlo al volver de la ficha
   const [genero, setGenero] = useState(TODOS)
+  // Filtro por distancia en km (empieza al máximo: se ven todos)
+  const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
 
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
@@ -40,7 +43,15 @@ function AppView() {
     <div className="flex h-full flex-col bg-fondo text-texto">
       <main className="flex-1 overflow-y-auto">
         {pantalla === 'inicio' && <Home onElegir={elegirConcierto} />}
-        {pantalla === 'buscar' && <Search genero={genero} onCambiarGenero={setGenero} onElegir={elegirConcierto} />}
+        {pantalla === 'buscar' && (
+          <Search
+            genero={genero}
+            onCambiarGenero={setGenero}
+            radio={radio}
+            onCambiarRadio={setRadio}
+            onElegir={elegirConcierto}
+          />
+        )}
         {pantalla === 'concierto' && (
           <EventDetail
             concierto={conciertoElegido}

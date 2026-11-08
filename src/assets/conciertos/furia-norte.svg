@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8d0801"/><stop offset="1" stop-color="#0b0b0b"/>
+    </linearGradient>
+    <radialGradient id="l" cx="0.8" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.45"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <rect width="800" height="500" fill="url(#l)"/>
+  <g fill="#000" opacity="0.55">
+    <circle cx="140" cy="520" r="120"/><circle cx="330" cy="540" r="140"/><circle cx="560" cy="530" r="130"/><circle cx="740" cy="545" r="120"/>
+  </g>
+  <g fill="#000" opacity="0.7">
+    <rect x="80" y="380" width="14" height="90" rx="7" transform="rotate(-15 87 380)"/>
+    <rect x="420" y="360" width="14" height="110" rx="7" transform="rotate(10 427 360)"/>
+    <rect x="650" y="370" width="14" height="100" rx="7" transform="rotate(-8 657 370)"/>
+  </g>
+  <text x="48" y="80" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="4" fill="#fff" opacity="0.9">METAL</text>
+  <text x="48" y="190" font-family="Helvetica, Arial, sans-serif" font-size="68" font-weight="800" fill="#fff">Furia Norte</text>
+  <text x="48" y="240" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#fff" opacity="0.85">EN DIRECTO · MADRID</text>
+</svg>
