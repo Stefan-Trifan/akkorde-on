@@ -3,7 +3,7 @@
 // las cifras salen de textos.js (fuente OCU) y las respuestas, de cómo funciona Akkorde-on.
 import { cifra } from './textos.js'
 
-// Juan Gasp (06-11): cambiar por el id del vídeo conceptual (lo que va tras «v=» en el enlace)
+// Juan Guasp (06-11): cambiar por el id del vídeo conceptual (lo que va tras «v=» en el enlace)
 // y poner VIDEO_PROVISIONAL a false.
 // Provisional: noticia de la OCU sobre los gastos de las entradas de Bad Bunny.
 export const VIDEO_YOUTUBE_ID = '1JIZCM9_92c'
@@ -50,7 +50,3 @@ export const faq = [
     respuesta: 'No. Publicar conciertos en Akkorde-on es gratis para salas y promotores.',
   },
 ]
-
-// Nico (06-11): 3-4 frases reales de la encuesta, sin nombres. Ejemplo: { texto: '…' }
-// Mientras esté vacío se ven tarjetas «Próximamente»: nunca opiniones inventadas.
-export const opiniones = []

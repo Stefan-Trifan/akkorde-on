@@ -1,7 +1,7 @@
 import { inicio } from '../data/textos.js'
 
 // ---------- Constantes ----------
-const EQUIPO = ['Steven', 'Alfredo', 'Nico', 'Fran', 'Juan Gasp', 'Juan Antonio', 'Alejandro']
+const EQUIPO = ['Steven', 'Alfredo', 'Nico', 'Fran', 'Juan Guasp', 'Juan Antonio', 'Alejandro']
 
 // Pie: logo, eslogan, equipo y U-tad
 function Footer() {
