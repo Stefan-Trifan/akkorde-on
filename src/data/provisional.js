@@ -3,11 +3,9 @@
 // las cifras salen de textos.js (fuente OCU) y las respuestas, de cómo funciona Akkorde-on.
 import { cifra } from './textos.js'
 
-// Juan Guasp (06-11): cambiar por el id del vídeo conceptual (lo que va tras «v=» en el enlace)
-// y poner VIDEO_PROVISIONAL a false.
-// Provisional: noticia de la OCU sobre los gastos de las entradas de Bad Bunny.
-export const VIDEO_YOUTUBE_ID = '1JIZCM9_92c'
-export const VIDEO_PROVISIONAL = true
+// Video conceptual del Sprint 2: Short de YouTube, en vertical (9:16)
+export const VIDEO_YOUTUBE_ID = 'mIycoXS5m7g'
+export const VIDEO_PROVISIONAL = false
 
 // Fran (05-11): misma entrada en 2-3 plataformas, precio final con gastos, enlace y fecha.
 // Provisional: el caso de Bad Bunny que ya usamos en la cifra de la web.
