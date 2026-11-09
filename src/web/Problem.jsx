@@ -15,7 +15,7 @@ function Problem() {
       </div>
 
       <figure className="flex flex-col gap-2">
-        <div className="aspect-video overflow-hidden rounded-2xl border border-borde">
+        <div className="mx-auto aspect-[9/16] w-full max-w-[315px] overflow-hidden rounded-2xl border border-borde">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${VIDEO_YOUTUBE_ID}`}
             title="Vídeo de Akkorde-on"
