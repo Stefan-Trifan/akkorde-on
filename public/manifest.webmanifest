@@ -1,0 +1,16 @@
+{
+  "name": "Akkorde-on",
+  "short_name": "Akkorde-on",
+  "description": "Demo de Akkorde-on: entradas de conciertos en Madrid con reventa al precio original",
+  "lang": "es",
+  "start_url": "/akkorde-on/demo/",
+  "scope": "/akkorde-on/demo/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b09",
+  "theme_color": "#0b0b09",
+  "icons": [
+    { "src": "/akkorde-on/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/akkorde-on/icono-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

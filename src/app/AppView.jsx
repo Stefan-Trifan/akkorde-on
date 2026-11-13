@@ -232,7 +232,7 @@ function AppView({ onAbrirAvisame }) {
   return (
     <div className="flex h-full flex-col bg-fondo text-texto">
       {/* key = pantalla: al cambiar de pantalla se empieza arriba del todo, no donde se quedó la anterior */}
-      <main key={pantalla} className="flex-1 overflow-y-auto">
+      <main key={pantalla} className="flex-1 overflow-y-auto pt-[env(safe-area-inset-top)]">
         {pantalla === 'inicio' && (
           <Home
             ubicacion={ubicacion}
@@ -369,7 +369,7 @@ function AppView({ onAbrirAvisame }) {
         )}
       </main>
 
-      <nav className="flex border-t border-borde bg-superficie">
+      <nav className="flex border-t border-borde bg-superficie pb-[env(safe-area-inset-bottom)]">
         {PESTANAS.map((pestana) => (
           <button
             key={pestana.pantalla}
