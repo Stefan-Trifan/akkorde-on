@@ -18,7 +18,32 @@ export function opcionesVenta(evento) {
     plano: venta.plano ?? null,
     // Qué deja ver el organizador
     mostrar: { tramos: false, quedan: false, mapa: false, ...venta.mostrar },
+    // Datos que pide el organizador: DNI al comprar (para evitar la reventa)
+    pideDni: venta.pideDni ?? false,
+    // Reservados: hasta qué hora se guarda la mesa y señal para bloquearla (null = se paga entera)
+    reservadoHasta: venta.reservadoHasta ?? '01:30',
+    senalReservado: venta.senalReservado ?? null,
   }
+}
+
+// ---------- Datos del comprador ----------
+// Años cumplidos el día del evento (fechas "AAAA-MM-DD")
+export function edadEnFecha(fechaNacimiento, fechaEvento) {
+  const [an, mn, dn] = fechaNacimiento.split('-').map(Number)
+  const [ae, me, de] = fechaEvento.split('-').map(Number)
+  const yaCumplidos = me > mn || (me === mn && de >= dn)
+  return ae - an - (yaCumplidos ? 0 : 1)
+}
+
+// Horas de llegada que se pueden elegir para un reservado: cada 30 min desde la apertura hasta la hora límite
+export function horasLlegada(evento, hasta) {
+  const horas = []
+  const inicio = new Date(`${evento.fecha}T${evento.hora}`)
+  const fin = cierreLista(evento, { hastaHora: hasta })
+  for (let momento = inicio; momento <= fin; momento = new Date(momento.getTime() + 30 * 60 * 1000)) {
+    horas.push(momento.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+  }
+  return horas
 }
 
 // ---------- Entradas y tramos ----------

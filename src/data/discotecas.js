@@ -9,6 +9,8 @@
 //   reservados: mesas del plano [{ id, nombre, zona, precio, personas, incluye, x, y, ocupado }]
 //   plano:      elementos fijos del plano de la sala (pista, cabina, barra) en un lienzo de 100 x 70
 //   mostrar:    qué deja ver el dueño → tramos (todos los tramos), quedan (entradas que quedan), mapa
+//   pideDni:    pide DNI o pasaporte al comprar (para evitar la reventa)
+//   reservadoHasta: hora hasta la que se guarda la mesa; senalReservado: señal para bloquearla (si no, se paga entera)
 
 import { fechaDentroDe } from '../app/tiempo.js'
 import fitzClub from '../assets/conciertos/fitz-club.svg'
@@ -93,6 +95,8 @@ export const sesionesDiscoteca = [
       reservados: conOcupadas(MESAS_FITZ, ['m2', 'v1']),
       plano: PLANO_FITZ,
       mostrar: { tramos: true, quedan: true, mapa: true },
+      reservadoHasta: '01:30',
+      senalReservado: 100,
     },
   },
   {
@@ -174,6 +178,8 @@ export const sesionesDiscoteca = [
       reservados: conOcupadas(MESAS_KAPITAL, ['k1', 'k4']),
       plano: PLANO_KAPITAL,
       mostrar: { tramos: true, quedan: false, mapa: true },
+      pideDni: true,
+      reservadoHasta: '02:00',
     },
   },
   {
@@ -199,6 +205,7 @@ export const sesionesDiscoteca = [
         },
       ],
       mostrar: { tramos: true, quedan: true },
+      pideDni: true,
     },
   },
 
@@ -218,6 +225,8 @@ export const sesionesDiscoteca = [
       entradas: [{ id: 'general', nombre: 'Entrada general', incluye: '1 copa', precio: 25 }],
       reservados: conOcupadas(MESAS_OPIUM, ['o2']),
       mostrar: { mapa: false },
+      reservadoHasta: '00:30',
+      senalReservado: 150,
     },
   },
   {

@@ -43,6 +43,8 @@ function AppView({ onAbrirAvisame }) {
   const [origenLocal, setOrigenLocal] = useState('buscar')
   // Lo elegido en «Elegir entradas» antes de pagar (ver venta.js)
   const [carrito, setCarrito] = useState(null)
+  // Datos del comprador si marcó «Recordar mis datos» (solo en memoria, se pierden al recargar)
+  const [datosGuardados, setDatosGuardados] = useState(null)
 
   const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
 
@@ -156,6 +158,8 @@ function AppView({ onAbrirAvisame }) {
           <Checkout
             concierto={conciertoElegido}
             carrito={carrito}
+            datosGuardados={datosGuardados}
+            onGuardarDatos={setDatosGuardados}
             onPagar={comprarEntradas}
             onVerEntradas={() => setPantalla('entradas')}
             onVolver={() => setPantalla('opciones')}
