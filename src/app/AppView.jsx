@@ -7,6 +7,7 @@ import ElegirEntradas from './ElegirEntradas.jsx'
 import MyTickets from './MyTickets.jsx'
 import TicketCarrusel from './TicketCarrusel.jsx'
 import VenueDetail from './VenueDetail.jsx'
+import ArtistDetail from './ArtistDetail.jsx'
 import Amigos from './Amigos.jsx'
 import { AMIGOS_INICIALES, SOLICITUDES_INICIALES, asistencia, usuarioPorId } from '../data/amigos.js'
 import { eventos } from '../data/eventos.js'
@@ -54,6 +55,9 @@ function AppView({ onAbrirAvisame }) {
   // Ficha de local abierta y pantalla a la que vuelve
   const [localElegido, setLocalElegido] = useState(null)
   const [origenLocal, setOrigenLocal] = useState('buscar')
+  // Ficha de artista abierta y pantalla a la que vuelve
+  const [artistaElegido, setArtistaElegido] = useState(null)
+  const [origenArtista, setOrigenArtista] = useState('buscar')
   // Lo elegido en «Elegir entradas» antes de pagar (ver venta.js)
   const [carrito, setCarrito] = useState(null)
   // Datos del comprador si marcó «Recordar mis datos» (solo en memoria, se pierden al recargar)
@@ -131,6 +135,15 @@ function AppView({ onAbrirAvisame }) {
     setPantalla('local')
   }
 
+  // Abre la ficha de una artista. Igual que con los locales: si se abre desde un concierto,
+  // «Volver» salta a donde se abrió ese concierto (sin bucle concierto ↔ artista)
+  function verArtista(artista) {
+    setArtistaElegido(artista)
+    const desde = pantalla === 'concierto' ? origen : pantalla
+    if (desde !== 'artista') setOrigenArtista(desde)
+    setPantalla('artista')
+  }
+
   // Pasa de «Elegir entradas» al pago con lo elegido
   function irAPagar(nuevoCarrito) {
     setCarrito(nuevoCarrito)
@@ -170,7 +183,8 @@ function AppView({ onAbrirAvisame }) {
 
   return (
     <div className="flex h-full flex-col bg-fondo text-texto">
-      <main className="flex-1 overflow-y-auto">
+      {/* key = pantalla: al cambiar de pantalla se empieza arriba del todo, no donde se quedó la anterior */}
+      <main key={pantalla} className="flex-1 overflow-y-auto">
         {pantalla === 'inicio' && (
           <Home
             ubicacion={ubicacion}
@@ -204,6 +218,15 @@ function AppView({ onAbrirAvisame }) {
             onCambiarFavorito={cambiarFavorito}
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
+            onVerArtista={verArtista}
+          />
+        )}
+        {pantalla === 'artista' && (
+          <ArtistDetail
+            artista={artistaElegido}
+            ubicacion={ubicacion}
+            onElegir={elegirConcierto}
+            onVolver={() => setPantalla(origenArtista)}
           />
         )}
         {pantalla === 'local' && (
@@ -225,6 +248,7 @@ function AppView({ onAbrirAvisame }) {
             onComprar={() => setPantalla('opciones')}
             onVolver={() => setPantalla(origen)}
             onVerLocal={verLocal}
+            onVerArtista={verArtista}
           />
         )}
         {pantalla === 'opciones' && (

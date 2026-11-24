@@ -1,7 +1,8 @@
 import Avatar from '../components/Avatar.jsx'
 import BotonFavorito from '../components/BotonFavorito.jsx'
+import { artistaPorNombre } from '../data/artistas.js'
 import { cartelDe, infoAcceso } from '../data/eventos.js'
-import { iconoLocal } from '../data/salas.js'
+import { iconoLocal, ubicacionDe } from '../data/salas.js'
 import { opcionesVenta, precioDesde, tieneVariasOpciones } from './venta.js'
 import {
   GASTOS_GESTION,
@@ -40,8 +41,10 @@ function EventDetail({
   onComprar,
   onVolver,
   onVerLocal,
+  onVerArtista,
 }) {
   const total = precioFinal(concierto.precio)
+  const { municipio } = ubicacionDe(concierto.sala)
   const acceso = infoAcceso(concierto)
   const { listas, entradas, reservados, mostrar } = opcionesVenta(concierto)
   const variasOpciones = tieneVariasOpciones(concierto)
@@ -80,7 +83,7 @@ function EventDetail({
             </span>
             <span className="flex flex-1 flex-col">
               <span className="font-bold text-texto">{concierto.sala}</span>
-              <span className="text-xs text-suave">Madrid · ver ficha y agenda →</span>
+              <span className="text-xs text-suave">{municipio} · ver ficha y agenda →</span>
             </span>
           </button>
           <BotonFavorito activo={esFavorito} nombre={concierto.sala} onCambiar={onCambiarFavorito} />
@@ -109,11 +112,23 @@ function EventDetail({
         <div className="flex flex-col gap-2">
           <h2 className="text-xs font-bold uppercase tracking-widest text-suave">Cartel</h2>
           <div className="flex flex-wrap gap-2">
-            {cartelDe(concierto).map((artista) => (
-              <span key={artista} className="rounded-full border border-borde px-3 py-1 text-sm text-texto">
-                🎧 {artista}
-              </span>
-            ))}
+            {/* Las artistas del catálogo abren su ficha; los DJs solo se nombran */}
+            {cartelDe(concierto).map((nombre) =>
+              artistaPorNombre(nombre) ? (
+                <button
+                  key={nombre}
+                  type="button"
+                  onClick={() => onVerArtista(artistaPorNombre(nombre))}
+                  className="rounded-full border border-acento/60 bg-acento/10 px-3 py-1 text-sm font-semibold text-texto transition hover:border-acento"
+                >
+                  🎤 {nombre} →
+                </button>
+              ) : (
+                <span key={nombre} className="rounded-full border border-borde px-3 py-1 text-sm text-texto">
+                  🎧 {nombre}
+                </span>
+              ),
+            )}
           </div>
         </div>
 

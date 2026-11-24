@@ -1,3 +1,4 @@
+import { esProximo } from '../app/tiempo.js'
 import { artistaPorNombre } from './artistas.js'
 import { COMUNIDAD_MADRID } from './comunidades.js'
 import { conciertos } from './conciertos.js'
@@ -40,4 +41,11 @@ export function cartelDe(evento) {
 // Artistas del catálogo que tocan en el evento (los DJs no están en el catálogo)
 export function artistasDe(evento) {
   return cartelDe(evento).map(artistaPorNombre).filter(Boolean)
+}
+
+// Próximos conciertos de una artista dentro de una lista de eventos, por fecha
+export function proximosDe(nombre, lista) {
+  return lista
+    .filter((evento) => esProximo(evento) && cartelDe(evento).includes(nombre))
+    .sort((a, b) => `${a.fecha} ${a.hora}`.localeCompare(`${b.fecha} ${b.hora}`))
 }

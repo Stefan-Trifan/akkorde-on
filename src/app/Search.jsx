@@ -84,6 +84,7 @@ function Search({
   onCambiarFavorito,
   onElegir,
   onVerLocal,
+  onVerArtista,
 }) {
   const resultados = eventos.filter(
     (evento) =>
@@ -115,6 +116,7 @@ function Search({
           onCambiarArtista={onCambiarArtista}
           onCambiarFavorito={onCambiarFavorito}
           onVerLocal={onVerLocal}
+          onVerArtista={onVerArtista}
         />
       </header>
 

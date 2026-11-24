@@ -85,6 +85,7 @@ function Buscador({
   onCambiarArtista,
   onCambiarFavorito,
   onVerLocal,
+  onVerArtista,
 }) {
   const [texto, setTexto] = useState('')
   const [abierto, setAbierto] = useState(false)
@@ -109,7 +110,17 @@ function Buscador({
     <div className="flex flex-col gap-2">
       {artista !== TODOS && (
         <Elegido icono="🎤" nombre={artista} onQuitar={() => onCambiarArtista(TODOS)}>
-          <span className="text-sm text-suave">{etiquetaArtista(artista)}</span>
+          {artistaPorNombre(artista) ? (
+            <button
+              type="button"
+              onClick={() => onVerArtista(artistaPorNombre(artista))}
+              className="self-start text-sm font-semibold text-acento hover:underline"
+            >
+              {etiquetaArtista(artista)} · ver artista →
+            </button>
+          ) : (
+            <span className="text-sm text-suave">{etiquetaArtista(artista)}</span>
+          )}
         </Elegido>
       )}
 
