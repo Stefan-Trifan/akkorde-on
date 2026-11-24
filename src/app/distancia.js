@@ -2,9 +2,10 @@ import { salas } from '../data/salas.js'
 
 // ---------- Constantes ----------
 const RADIO_TIERRA_KM = 6371
-// Límites de la barra de distancia (km); empieza al máximo para ver todos
+// Límites de la barra de distancia (km); empieza al máximo para ver todos.
+// 30 km para llegar a los conciertos de Alcalá, Getafe y Móstoles (giras.js)
 export const DISTANCIA_MIN_KM = 0.5
-export const DISTANCIA_MAX_KM = 10
+export const DISTANCIA_MAX_KM = 30
 export const PASO_KM = 0.5
 
 // Pasa grados a radianes

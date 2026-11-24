@@ -45,6 +45,9 @@ function AppView({ onAbrirAvisame }) {
   const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
   // Punto desde el que se miden las distancias ({ nombre, lat, lng }): una zona o el GPS
   const [ubicacion, setUbicacion] = useState(UBICACION_INICIAL)
+  // Filtro por tipo de plan ('todo', 'conciertos' o 'fiestas') y por artista o DJ del cartel
+  const [tipoPlan, setTipoPlan] = useState('todo')
+  const [artista, setArtista] = useState(TODOS)
   // Filtro por sala o discoteca y por fecha ('todas', 'hoy' o 'finde')
   const [local, setLocal] = useState(TODOS)
   const [cuando, setCuando] = useState('todas')
@@ -110,6 +113,8 @@ function AppView({ onAbrirAvisame }) {
 
   // Vuelve los filtros de búsqueda a como estaban al abrir la app (la ubicación se mantiene)
   function limpiarFiltros() {
+    setTipoPlan('todo')
+    setArtista(TODOS)
     setGenero(TODOS)
     setRadio(DISTANCIA_MAX_KM)
     setLocal(TODOS)
@@ -180,6 +185,10 @@ function AppView({ onAbrirAvisame }) {
         )}
         {pantalla === 'buscar' && (
           <Search
+            tipoPlan={tipoPlan}
+            onCambiarTipoPlan={setTipoPlan}
+            artista={artista}
+            onCambiarArtista={setArtista}
             genero={genero}
             onCambiarGenero={setGenero}
             radio={radio}
