@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import QrRedondeado from '../components/QrRedondeado.jsx'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
 import Avatar from '../components/Avatar.jsx'
 import { MI_PERFIL, buscarUsuarios, nombreCompleto, usuarioPorId } from '../data/amigos.js'
 
@@ -230,7 +231,10 @@ function Amigos({ amigos, recibidas, enviadas, planesDe, onEnviarSolicitud, onAc
         </ul>
       </Bloque>
 
-      <p className="text-center text-xs text-suave">Demo: las personas son inventadas y no se envía nada a nadie.</p>
+      {/* DEMO: aviso de datos inventados */}
+      {MODO_DEMO && (
+        <p className="text-center text-xs text-suave">Demo: las personas son inventadas y no se envía nada a nadie.</p>
+      )}
     </div>
   )
 }

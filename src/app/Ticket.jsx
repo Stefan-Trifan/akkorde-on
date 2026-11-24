@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import QrRedondeado from '../components/QrRedondeado.jsx'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
 import Avatar from '../components/Avatar.jsx'
 import { nombreCompleto } from '../data/amigos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio, precioFinal } from './formato.js'
@@ -47,7 +48,7 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
   const [confirmando, setConfirmando] = useState(null)
   // Nombre de la persona a la que se envía la entrada
   const [destinatario, setDestinatario] = useState('')
-  // Solo para la demo: hacer como si faltara 1 h para el concierto
+  // DEMO: hacer como si faltara 1 h para el concierto (botón 🧪 de abajo)
   const [simularHora, setSimularHora] = useState(false)
 
   const { concierto, codigo, enReventa, gastosExtra = 0, enviadaA } = entrada
@@ -83,24 +84,45 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
   return (
     <div className="flex flex-col gap-5 px-5 pb-5">
 
-      <article className="overflow-hidden rounded-3xl bg-crema text-fondo">
-        <img src={concierto.imagen} alt="" className="aspect-[8/3] w-full object-cover" />
-        <div className="flex flex-col items-center gap-3 p-5">
-          <div className="text-center">
-            <p className="text-xl font-extrabold">{concierto.nombre}</p>
-            <p className="text-sm">
-              {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
-            </p>
-            {entrada.opcion && (
-              <p className="mt-2 inline-block rounded-full bg-fondo px-3 py-0.5 text-xs font-bold text-acento">
-                {entrada.opcion}
-              </p>
-            )}
-            {entrada.asistente && <p className="mt-1 text-sm font-semibold">A nombre de {entrada.asistente}</p>}
-            {entrada.detalle && <p className="text-xs">Incluye: {entrada.detalle}</p>}
-            {entrada.aviso && <p className="text-xs font-semibold">⏰ {entrada.aviso}</p>}
-          </div>
+      {/* Entrada tipo «pase»: el color de la discoteca tiñe toda la tarjeta y se funde con el fondo oscuro */}
+      <article className="relative isolate overflow-hidden rounded-[2rem] text-texto shadow-2xl ring-1 ring-white/10">
+        {/* Fondo: la imagen del evento muy difuminada + capa oscura que baja hacia el color de la app */}
+        <img
+          src={concierto.imagen}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-20 h-full w-full scale-150 object-cover opacity-70 blur-2xl"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-fondo/10 via-fondo/60 to-fondo/95" />
 
+        {/* Cabecera: la imagen se desvanece hacia abajo en vez de cortar en seco */}
+        <img
+          src={concierto.imagen}
+          alt=""
+          className="aspect-[8/3] w-full object-cover [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
+        />
+
+        <div className="-mt-6 flex flex-col items-center gap-1 px-5 pb-4 text-center">
+          <p className="text-2xl font-extrabold drop-shadow">{concierto.nombre}</p>
+          <p className="text-sm text-texto/80">
+            {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
+          </p>
+          {entrada.opcion && (
+            <p className="mt-2 rounded-full bg-acento px-3 py-0.5 text-xs font-bold text-fondo">{entrada.opcion}</p>
+          )}
+          {entrada.asistente && <p className="mt-1 text-sm font-semibold">A nombre de {entrada.asistente}</p>}
+          {entrada.detalle && <p className="text-xs text-texto/70">Incluye: {entrada.detalle}</p>}
+          {entrada.aviso && <p className="text-xs font-semibold text-crema">⏰ {entrada.aviso}</p>}
+        </div>
+
+        {/* Línea de corte con dos muescas, como una entrada de papel */}
+        <div className="relative flex items-center" aria-hidden="true">
+          <span className="absolute -left-3 h-6 w-6 rounded-full bg-fondo" />
+          <span className="mx-5 w-full border-t-2 border-dashed border-white/20" />
+          <span className="absolute -right-3 h-6 w-6 rounded-full bg-fondo" />
+        </div>
+
+        <div className="flex flex-col items-center gap-3 px-5 pb-6 pt-5">
           <div className="relative">
             <div aria-hidden={!mostrarQr}>
               <QrRedondeado valor={codigo} tamano={184} difuminado={!mostrarQr} etiqueta={`QR de la entrada ${codigo}`} />
@@ -130,8 +152,8 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
             )}
           </div>
 
-          <p className="font-mono text-xs">{mostrarQr ? codigo : 'AKK-••••••'}</p>
-          <p className="text-xs">
+          <p className="font-mono text-xs text-texto/80">{mostrarQr ? codigo : 'AKK-••••••'}</p>
+          <p className="text-xs text-texto/70">
             {pagado === null ? 'Incluida en el reservado' : pagado === 0 ? 'Gratis' : `Pagado: ${formatearPrecio(pagado)}`}
             {gastosExtra > 0 && ` + ${formatearPrecio(gastosExtra)} por quitar la reventa`} · válida una sola vez
           </p>
@@ -261,15 +283,20 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
           </>
         )}
 
-        <button
-          type="button"
-          onClick={() => setSimularHora(!simularHora)}
-          aria-pressed={simularHora}
-          className="mt-4 rounded-2xl border border-dashed border-borde p-3 text-xs text-suave hover:text-texto"
-        >
-          🧪 Demo: {simularHora ? 'volver a la hora real' : `simular que falta ${HORAS_ANTES_QR} h para el concierto`}
-        </button>
-        <p className="text-center text-xs text-suave">Demo: no es una entrada real ni se cobra nada.</p>
+        {/* DEMO: botón para ver el QR sin esperar y aviso de que no es real */}
+        {MODO_DEMO && (
+          <>
+            <button
+              type="button"
+              onClick={() => setSimularHora(!simularHora)}
+              aria-pressed={simularHora}
+              className="mt-4 rounded-2xl border border-dashed border-borde p-3 text-xs text-suave hover:text-texto"
+            >
+              🧪 Demo: {simularHora ? 'volver a la hora real' : `simular que falta ${HORAS_ANTES_QR} h para el concierto`}
+            </button>
+            <p className="text-center text-xs text-suave">Demo: no es una entrada real ni se cobra nada.</p>
+          </>
+        )}
       </section>
     </div>
   )

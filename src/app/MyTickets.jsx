@@ -23,27 +23,46 @@ function GrupoRow({ grupo, onAbrir }) {
     <button
       type="button"
       onClick={() => onAbrir(entradas.map((entrada) => entrada.id))}
-      className="relative flex w-full items-center overflow-hidden rounded-2xl bg-crema text-left text-fondo transition hover:brightness-95"
+      className="group relative isolate flex w-full items-center gap-3 overflow-hidden rounded-3xl p-2 text-left text-texto shadow-lg ring-1 ring-white/10 transition hover:ring-acento/60"
     >
-      <img src={concierto.imagen} alt="" className="h-24 w-24 shrink-0 object-cover object-left" />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 px-3 py-2">
-        <span className="truncate font-bold">{concierto.nombre}</span>
-        <span className="truncate text-sm">
+      {/* Fondo teñido con el color de la discoteca, igual que la entrada abierta */}
+      <img
+        src={concierto.imagen}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 -z-20 h-full w-full scale-150 object-cover opacity-60 blur-2xl"
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-fondo/30 to-fondo/85" />
+      {/* Entradas «apiladas»: si hay varias, se ve otra asomando detrás */}
+      <div className="relative shrink-0">
+        {entradas.length > 1 && (
+          <img
+            src={concierto.imagen}
+            alt=""
+            aria-hidden="true"
+            className="absolute left-1.5 top-1.5 h-24 w-24 rotate-6 rounded-2xl object-cover object-left opacity-60"
+          />
+        )}
+        <img src={concierto.imagen} alt="" className="relative h-24 w-24 rounded-2xl object-cover object-left shadow-md" />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 py-1 pl-1">
+        <span className="truncate font-bold group-hover:text-acento">{concierto.nombre}</span>
+        <span className="truncate text-sm text-texto/80">
           {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
         </span>
-        {nombres.length > 0 && <span className="truncate text-xs">{nombres.join(' · ')}</span>}
-        <span className="flex gap-1">
-          <span className="w-fit rounded-full bg-fondo px-2 py-0.5 text-xs font-bold text-acento">
+        {nombres.length > 0 && <span className="truncate text-xs text-texto/70">{nombres.join(' · ')}</span>}
+        <span className="mt-0.5 flex gap-1">
+          <span className="w-fit rounded-full bg-acento px-2 py-0.5 text-xs font-bold text-fondo">
             {entradas.length} {entradas.length === 1 ? 'entrada' : 'entradas'}
           </span>
           {enReventa > 0 && (
-            <span className="w-fit rounded-full border border-fondo px-2 py-0.5 text-xs font-bold">
+            <span className="w-fit rounded-full border border-white/30 px-2 py-0.5 text-xs font-bold">
               {enReventa} en reventa
             </span>
           )}
         </span>
       </div>
-      <span className="pr-4 text-xl" aria-hidden="true">
+      <span className="pr-3 text-xl text-texto/70" aria-hidden="true">
         ›
       </span>
     </button>

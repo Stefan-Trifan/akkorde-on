@@ -1,4 +1,5 @@
 import Avatar from '../components/Avatar.jsx'
+import BotonFavorito from '../components/BotonFavorito.jsx'
 import { cartelDe, infoAcceso } from '../data/eventos.js'
 import { iconoLocal } from '../data/salas.js'
 import { opcionesVenta, precioDesde, tieneVariasOpciones } from './venta.js'
@@ -31,7 +32,15 @@ function textoAmigos(amigos) {
   return `${nombres[0]}, ${nombres[1]} y ${resto} ${resto === 1 ? 'amigo' : 'amigos'} más van`
 }
 
-function EventDetail({ concierto, amigosQueVan = [], onComprar, onVolver, onVerLocal }) {
+function EventDetail({
+  concierto,
+  amigosQueVan = [],
+  esFavorito,
+  onCambiarFavorito,
+  onComprar,
+  onVolver,
+  onVerLocal,
+}) {
   const total = precioFinal(concierto.precio)
   const acceso = infoAcceso(concierto)
   const { listas, entradas, reservados, mostrar } = opcionesVenta(concierto)
@@ -60,22 +69,22 @@ function EventDetail({ concierto, amigosQueVan = [], onComprar, onVolver, onVerL
           {concierto.descripcion && <p className="mt-2 text-suave">{concierto.descripcion}</p>}
         </div>
 
-        <button
-          type="button"
-          onClick={() => onVerLocal(concierto.sala)}
-          className="flex items-center gap-3 rounded-2xl border border-borde bg-superficie p-3 text-left transition hover:border-acento"
-        >
-          <span className="text-2xl" aria-hidden="true">
-            {iconoLocal(concierto.sala)}
-          </span>
-          <span className="flex flex-1 flex-col">
-            <span className="font-bold text-texto">{concierto.sala}</span>
-            <span className="text-xs text-suave">Madrid · ver ficha y agenda</span>
-          </span>
-          <span className="text-acento" aria-hidden="true">
-            →
-          </span>
-        </button>
+        <div className="flex items-center gap-2 rounded-2xl border border-borde bg-superficie p-2 transition hover:border-acento">
+          <button
+            type="button"
+            onClick={() => onVerLocal(concierto.sala)}
+            className="flex flex-1 items-center gap-3 rounded-xl p-1 text-left"
+          >
+            <span className="text-2xl" aria-hidden="true">
+              {iconoLocal(concierto.sala)}
+            </span>
+            <span className="flex flex-1 flex-col">
+              <span className="font-bold text-texto">{concierto.sala}</span>
+              <span className="text-xs text-suave">Madrid · ver ficha y agenda →</span>
+            </span>
+          </button>
+          <BotonFavorito activo={esFavorito} nombre={concierto.sala} onCambiar={onCambiarFavorito} />
+        </div>
 
         {amigosQueVan.length > 0 && (
           <div className="flex items-center gap-3 rounded-2xl bg-acento/10 p-3">

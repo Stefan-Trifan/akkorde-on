@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import BotonFavorito from '../components/BotonFavorito.jsx'
 import { NOMBRES_DISCOTECAS, NOMBRES_SALAS, iconoLocal, salas } from '../data/salas.js'
 import { TODOS } from './formato.js'
 
@@ -15,7 +16,7 @@ function normalizar(texto) {
 
 // Campo para buscar una sala o discoteca escribiendo su nombre.
 // Al enfocarlo se ven todos los locales; al escribir se van filtrando.
-function BuscadorLocal({ local, onCambiarLocal, onVerLocal }) {
+function BuscadorLocal({ local, favoritos = [], onCambiarLocal, onCambiarFavorito, onVerLocal }) {
   const [texto, setTexto] = useState('')
   const [abierto, setAbierto] = useState(false)
 
@@ -44,6 +45,7 @@ function BuscadorLocal({ local, onCambiarLocal, onVerLocal }) {
             Ver ficha y agenda →
           </button>
         </div>
+        <BotonFavorito activo={favoritos.includes(local)} nombre={local} onCambiar={() => onCambiarFavorito(local)} />
         <button
           type="button"
           onClick={() => onCambiarLocal(TODOS)}

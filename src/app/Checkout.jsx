@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Avatar from '../components/Avatar.jsx'
 import { MI_PERFIL } from '../data/amigos.js'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
+import { personaAleatoria } from '../demo/datosAleatorios.js' // DEMO:
 import { infoAcceso } from '../data/eventos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio } from './formato.js'
 import { edadEnFecha, horasLlegada, opcionesVenta, plazasDelCarrito, totalCarrito } from './venta.js'
@@ -187,10 +189,24 @@ function Checkout({ concierto, carrito, datosGuardados, amigos = [], onGuardarDa
   // Al intentar pagar con datos incompletos se enseñan los errores
   const [intentado, setIntentado] = useState(false)
   // La primera ficha empieza rellena si el usuario pidió recordar sus datos
+  // DEMO: en modo demo cada ficha empieza rellena con una persona aleatoria válida (ver src/demo)
+  const datosDemo = () => (MODO_DEMO ? personaAleatoria(concierto.fecha) : {})
+  const llegadaDemo = () => (MODO_DEMO ? horasLlegada(concierto, reservadoHasta)[1] ?? '' : '')
   const [asistentes, setAsistentes] = useState(() =>
-    plazasConFicha.map((_, i) => ({ ...ASISTENTE_VACIO, ...(i === 0 ? datosGuardados : {}) })),
+    plazasConFicha.map((_, i) => ({ ...ASISTENTE_VACIO, ...datosDemo(), ...(i === 0 ? datosGuardados : {}) })),
   )
-  const [titular, setTitular] = useState(() => ({ ...ASISTENTE_VACIO, ...datosGuardados, llegada: '' }))
+  const [titular, setTitular] = useState(() => ({
+    ...ASISTENTE_VACIO,
+    ...datosDemo(),
+    ...datosGuardados,
+    llegada: llegadaDemo(),
+  }))
+
+  // DEMO: cambia todas las fichas por otras personas aleatorias
+  function otrosDatosDemo() {
+    setAsistentes(asistentes.map((datos) => ({ ...datos, ...personaAleatoria(concierto.fecha) })))
+    setTitular({ ...titular, ...personaAleatoria(concierto.fecha) })
+  }
   const [recordar, setRecordar] = useState(Boolean(datosGuardados))
   const [abierto, setAbierto] = useState(reservado && plazasConFicha.length === 0 ? 'titular' : 0)
   const [pagarSenal, setPagarSenal] = useState(senalReservado !== null)
@@ -298,6 +314,23 @@ function Checkout({ concierto, carrito, datosGuardados, amigos = [], onGuardarDa
           {concierto.nombre} · {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
         </p>
       </header>
+
+      {/* DEMO: aviso de que los datos son de prueba, con botón para generar otros */}
+      {MODO_DEMO && (
+        <div className="flex items-center gap-3 rounded-2xl border border-dashed border-acento/50 bg-acento/5 p-3">
+          <p className="flex-1 text-xs text-suave">
+            🧪 <strong className="text-texto">Modo demo:</strong> hemos rellenado datos de prueba inventados para que
+            puedas pagar directamente. Puedes cambiarlos.
+          </p>
+          <button
+            type="button"
+            onClick={otrosDatosDemo}
+            className="shrink-0 rounded-full border border-borde px-3 py-1.5 text-xs font-semibold text-texto hover:border-acento"
+          >
+            🎲 Otros
+          </button>
+        </div>
+      )}
 
       {/* Lo que se compra, como en la tarjeta de la izquierda de la web */}
       <ul className="flex flex-col gap-2">
@@ -528,8 +561,9 @@ function Checkout({ concierto, carrito, datosGuardados, amigos = [], onGuardarDa
         </div>
 
         <p className="text-center text-xs text-suave">
-          Al pagar aceptas los términos y condiciones, la política de privacidad y las condiciones del organizador. Demo:
-          no se realiza ningún pago real ni se piden datos de tarjeta.
+          Al pagar aceptas los términos y condiciones, la política de privacidad y las condiciones del organizador.
+          {/* DEMO: aviso de pago simulado */}
+          {MODO_DEMO && ' Demo: no se realiza ningún pago real ni se piden datos de tarjeta.'}
         </p>
 
         {intentado && !todoBien && (

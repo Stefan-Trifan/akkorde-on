@@ -4,7 +4,8 @@ import { distanciaAConcierto, formatearDistancia } from './distancia.js'
 import { etiquetaFecha } from './tiempo.js'
 
 // Tarjeta de un evento en las listas (inicio y búsqueda)
-function ConcertCard({ concierto, ubicacion, onElegir }) {
+// motivo (opcional): por qué se recomienda, para «Quizás te interese»
+function ConcertCard({ concierto, ubicacion, motivo, onElegir }) {
   const distancia = distanciaAConcierto(concierto, ubicacion)
   const fecha = etiquetaFecha(concierto.fecha)
   const esPronto = fecha === 'Hoy' || fecha === 'Mañana'
@@ -31,7 +32,11 @@ function ConcertCard({ concierto, ubicacion, onElegir }) {
           {distancia !== null && ` · ${formatearDistancia(distancia)}`}
         </span>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-suave">{etiquetaTipo(concierto.sala)}</span>
+          {motivo ? (
+            <span className="truncate pr-2 text-xs font-semibold text-acento">✨ {motivo}</span>
+          ) : (
+            <span className="text-xs text-suave">{etiquetaTipo(concierto.sala)}</span>
+          )}
           <span className="font-bold text-texto">{textoDesde(concierto)}</span>
         </div>
       </div>

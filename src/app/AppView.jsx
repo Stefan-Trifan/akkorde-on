@@ -11,6 +11,8 @@ import Amigos from './Amigos.jsx'
 import { AMIGOS_INICIALES, SOLICITUDES_INICIALES, asistencia, usuarioPorId } from '../data/amigos.js'
 import { eventos } from '../data/eventos.js'
 import { esProximo } from './tiempo.js'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
+import { crearEntradasDemo } from '../demo/entradasDemo.js' // DEMO:
 import { UBICACION_INICIAL } from '../data/zonas.js'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
@@ -24,7 +26,7 @@ const PESTANAS = [
   { pantalla: 'amigos', texto: 'Amigos', icono: '👥' },
   { pantalla: 'avisame', texto: 'Avísame', icono: '🔔' },
 ]
-// Segundos que tarda en «aceptar» una solicitud de amistad en la demo
+// DEMO: segundos que tarda en «aceptar» una solicitud de amistad (con backend, lo decide la otra persona)
 const SEGUNDOS_ACEPTAR = 3
 
 // Vista App: la demo de Akkorde-on como app de móvil
@@ -32,7 +34,8 @@ function AppView({ onAbrirAvisame }) {
   const [pantalla, setPantalla] = useState('inicio')
   const [conciertoElegido, setConciertoElegido] = useState(null)
   // Todas las entradas compradas y las que se están viendo en el carrusel ([] = se ve la lista)
-  const [entradas, setEntradas] = useState([])
+  // DEMO: en modo demo se empieza con unas entradas de ejemplo (ver src/demo/entradasDemo.js)
+  const [entradas, setEntradas] = useState(() => (MODO_DEMO ? crearEntradasDemo() : []))
   const [idsAbiertos, setIdsAbiertos] = useState([])
   // Pantalla desde la que se abrió la ficha, para que «Volver» regrese ahí
   const [origen, setOrigen] = useState('inicio')
@@ -59,7 +62,7 @@ function AppView({ onAbrirAvisame }) {
   const [enviadas, setEnviadas] = useState([])
   const perfilesAmigos = amigos.map(usuarioPorId)
 
-  // Envía una solicitud; en la demo la otra persona la acepta sola a los 3 segundos
+  // Envía una solicitud. DEMO: la otra persona la acepta sola a los 3 segundos (con backend, quitar el setTimeout)
   function enviarSolicitud(id) {
     setEnviadas((lista) => [...lista, id])
     setTimeout(() => {
@@ -88,8 +91,18 @@ function AppView({ onAbrirAvisame }) {
   // Entradas abiertas, en el orden en que se abrieron (aunque una se envíe, sigue en el carrusel hasta salir)
   const entradasAbiertas = idsAbiertos.map((id) => entradas.find((entrada) => entrada.id === id)).filter(Boolean)
 
+  // ---------- Favoritos y gustos ----------
+  // Salas y discotecas favoritas (♥) y eventos que se han abierto (para «Quizás te interese»)
+  const [favoritos, setFavoritos] = useState([])
+  const [vistos, setVistos] = useState([])
+
+  function cambiarFavorito(nombre) {
+    setFavoritos((lista) => (lista.includes(nombre) ? lista.filter((otro) => otro !== nombre) : [...lista, nombre]))
+  }
+
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
+    setVistos((lista) => (lista.includes(concierto.id) ? lista : [...lista, concierto.id]))
     setConciertoElegido(concierto)
     setOrigen(pantalla)
     setPantalla('concierto')
@@ -153,7 +166,18 @@ function AppView({ onAbrirAvisame }) {
   return (
     <div className="flex h-full flex-col bg-fondo text-texto">
       <main className="flex-1 overflow-y-auto">
-        {pantalla === 'inicio' && <Home ubicacion={ubicacion} onElegir={elegirConcierto} />}
+        {pantalla === 'inicio' && (
+          <Home
+            ubicacion={ubicacion}
+            favoritos={favoritos}
+            entradas={entradas}
+            vistos={vistos}
+            amigosQueVan={amigosQueVan}
+            onCambiarFavorito={cambiarFavorito}
+            onElegir={elegirConcierto}
+            onVerLocal={verLocal}
+          />
+        )}
         {pantalla === 'buscar' && (
           <Search
             genero={genero}
@@ -167,6 +191,8 @@ function AppView({ onAbrirAvisame }) {
             cuando={cuando}
             onCambiarCuando={setCuando}
             onLimpiar={limpiarFiltros}
+            favoritos={favoritos}
+            onCambiarFavorito={cambiarFavorito}
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
           />
@@ -175,6 +201,8 @@ function AppView({ onAbrirAvisame }) {
           <VenueDetail
             nombre={localElegido}
             ubicacion={ubicacion}
+            esFavorito={favoritos.includes(localElegido)}
+            onCambiarFavorito={() => cambiarFavorito(localElegido)}
             onElegir={elegirConcierto}
             onVolver={() => setPantalla(origenLocal)}
           />
@@ -183,6 +211,8 @@ function AppView({ onAbrirAvisame }) {
           <EventDetail
             concierto={conciertoElegido}
             amigosQueVan={amigosQueVan(conciertoElegido)}
+            esFavorito={favoritos.includes(conciertoElegido.sala)}
+            onCambiarFavorito={() => cambiarFavorito(conciertoElegido.sala)}
             onComprar={() => setPantalla('opciones')}
             onVolver={() => setPantalla(origen)}
             onVerLocal={verLocal}

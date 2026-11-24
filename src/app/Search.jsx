@@ -37,6 +37,8 @@ function Search({
   cuando,
   onCambiarCuando,
   onLimpiar,
+  favoritos,
+  onCambiarFavorito,
   onElegir,
   onVerLocal,
 }) {
@@ -54,7 +56,13 @@ function Search({
     <div className="flex flex-col gap-6 px-5 pb-8 pt-8">
       <header className="flex flex-col gap-3">
         <h1 className="text-2xl font-extrabold text-texto">¿Qué plan te apetece?</h1>
-        <BuscadorLocal local={local} onCambiarLocal={onCambiarLocal} onVerLocal={onVerLocal} />
+        <BuscadorLocal
+          local={local}
+          favoritos={favoritos}
+          onCambiarLocal={onCambiarLocal}
+          onCambiarFavorito={onCambiarFavorito}
+          onVerLocal={onVerLocal}
+        />
       </header>
 
       <section className="flex flex-col gap-2">

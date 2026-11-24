@@ -1,3 +1,4 @@
+import BotonFavorito from '../components/BotonFavorito.jsx'
 import { cartelDe, eventos, infoAcceso } from '../data/eventos.js'
 import { iconoLocal, salas } from '../data/salas.js'
 import { distanciaAConcierto, formatearDistancia } from './distancia.js'
@@ -15,7 +16,7 @@ function partesFecha(fecha) {
 }
 
 // Pantalla: ficha de una sala o discoteca con su agenda de próximos eventos
-function VenueDetail({ nombre, ubicacion, onElegir, onVolver }) {
+function VenueDetail({ nombre, ubicacion, esFavorito, onCambiarFavorito, onElegir, onVolver }) {
   const local = salas[nombre]
   const proximos = eventos.filter((evento) => evento.sala === nombre && esProximo(evento))
   const distancia = distanciaAConcierto({ sala: nombre }, ubicacion)
@@ -35,6 +36,12 @@ function VenueDetail({ nombre, ubicacion, onElegir, onVolver }) {
         >
           ←
         </button>
+        <BotonFavorito
+          activo={esFavorito}
+          nombre={nombre}
+          onCambiar={onCambiarFavorito}
+          className="absolute right-3 top-3 backdrop-blur"
+        />
         <div className="absolute inset-x-5 bottom-3">
           <span className="text-xs font-bold uppercase tracking-widest text-acento">
             {iconoLocal(nombre)} {local.tipo}
