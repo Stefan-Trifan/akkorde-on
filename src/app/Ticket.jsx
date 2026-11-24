@@ -37,8 +37,9 @@ function Confirmacion({ titulo, textoSi, onConfirmar, onCancelar, children }) {
   )
 }
 
-// Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender
-function Ticket({ entrada, onVolver, onRevender, onQuitarReventa, onEnviar }) {
+// Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender.
+// Se enseña dentro de TicketCarrusel, que pone la cabecera y las flechas.
+function Ticket({ entrada, onRevender, onQuitarReventa, onEnviar }) {
   const [qrVisible, setQrVisible] = useState(false)
   // Qué se está confirmando: null, 'revender', 'quitar' o 'enviar'
   const [confirmando, setConfirmando] = useState(null)
@@ -78,11 +79,7 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa, onEnviar }) {
   }
 
   return (
-    <div className="flex flex-col gap-5 p-5">
-      <button type="button" onClick={onVolver} className="self-start pt-4 text-suave hover:text-texto">
-        ← Mis entradas
-      </button>
-      <h1 className="text-2xl font-extrabold text-texto">Mi entrada</h1>
+    <div className="flex flex-col gap-5 px-5 pb-5">
 
       <article className="overflow-hidden rounded-3xl bg-crema text-fondo">
         <img src={concierto.imagen} alt="" className="aspect-[8/3] w-full object-cover" />
@@ -138,7 +135,7 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa, onEnviar }) {
       </article>
 
       <p className="text-center text-xs text-suave">
-        Por seguridad, tu QR está difuminado hasta {HORAS_ANTES_QR} h antes del concierto. Desliza para ver las opciones.
+        Por seguridad, tu QR está difuminado hasta {HORAS_ANTES_QR} h antes del concierto. Baja para ver las opciones.
       </p>
 
       <section className="flex flex-col gap-3 pt-6">

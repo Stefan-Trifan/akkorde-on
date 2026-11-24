@@ -5,7 +5,7 @@ import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
 import ElegirEntradas from './ElegirEntradas.jsx'
 import MyTickets from './MyTickets.jsx'
-import Ticket from './Ticket.jsx'
+import TicketCarrusel from './TicketCarrusel.jsx'
 import VenueDetail from './VenueDetail.jsx'
 import { UBICACION_INICIAL } from '../data/zonas.js'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
@@ -24,9 +24,9 @@ const PESTANAS = [
 function AppView({ onAbrirAvisame }) {
   const [pantalla, setPantalla] = useState('inicio')
   const [conciertoElegido, setConciertoElegido] = useState(null)
-  // Todas las entradas compradas y la que está abierta (null = se ve la lista)
+  // Todas las entradas compradas y las que se están viendo en el carrusel ([] = se ve la lista)
   const [entradas, setEntradas] = useState([])
-  const [idAbierta, setIdAbierta] = useState(null)
+  const [idsAbiertos, setIdsAbiertos] = useState([])
   // Pantalla desde la que se abrió la ficha, para que «Volver» regrese ahí
   const [origen, setOrigen] = useState('inicio')
   // Filtro de la búsqueda; vive aquí para no perderlo al volver de la ficha
@@ -46,7 +46,8 @@ function AppView({ onAbrirAvisame }) {
   // Datos del comprador si marcó «Recordar mis datos» (solo en memoria, se pierden al recargar)
   const [datosGuardados, setDatosGuardados] = useState(null)
 
-  const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
+  // Entradas abiertas, en el orden en que se abrieron (aunque una se envíe, sigue en el carrusel hasta salir)
+  const entradasAbiertas = idsAbiertos.map((id) => entradas.find((entrada) => entrada.id === id)).filter(Boolean)
 
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
@@ -86,7 +87,7 @@ function AppView({ onAbrirAvisame }) {
       return { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0, enviadaA: null, ...plaza }
     })
     setEntradas([...entradas, ...nuevas])
-    setIdAbierta(null)
+    setIdsAbiertos([])
   }
 
   // Cambia algunos datos de una entrada concreta
@@ -106,7 +107,7 @@ function AppView({ onAbrirAvisame }) {
       onAbrirAvisame()
       return
     }
-    if (destino === 'entradas') setIdAbierta(null)
+    if (destino === 'entradas') setIdsAbiertos([])
     setPantalla(destino)
   }
 
@@ -165,17 +166,17 @@ function AppView({ onAbrirAvisame }) {
             onVolver={() => setPantalla('opciones')}
           />
         )}
-        {pantalla === 'entradas' && !entradaAbierta && (
-          <MyTickets entradas={entradas} onAbrir={setIdAbierta} onBuscar={() => setPantalla('buscar')} />
+        {pantalla === 'entradas' && entradasAbiertas.length === 0 && (
+          <MyTickets entradas={entradas} onAbrir={setIdsAbiertos} onBuscar={() => setPantalla('buscar')} />
         )}
-        {pantalla === 'entradas' && entradaAbierta && (
-          <Ticket
-            key={entradaAbierta.id}
-            entrada={entradaAbierta}
-            onVolver={() => setIdAbierta(null)}
-            onRevender={() => actualizarEntrada(entradaAbierta.id, { enReventa: true })}
-            onQuitarReventa={() => quitarReventa(entradaAbierta)}
-            onEnviar={(nombre) => actualizarEntrada(entradaAbierta.id, { enviadaA: nombre, asistente: nombre })}
+        {pantalla === 'entradas' && entradasAbiertas.length > 0 && (
+          <TicketCarrusel
+            key={idsAbiertos.join()}
+            entradas={entradasAbiertas}
+            onVolver={() => setIdsAbiertos([])}
+            onRevender={(entrada) => actualizarEntrada(entrada.id, { enReventa: true })}
+            onQuitarReventa={quitarReventa}
+            onEnviar={(entrada, nombre) => actualizarEntrada(entrada.id, { enviadaA: nombre, asistente: nombre })}
           />
         )}
       </main>
