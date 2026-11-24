@@ -3,19 +3,22 @@
 // enseñan los mejores, cada uno con el motivo principal para que se entienda por qué sale.
 //
 // Señales (cuanto más pesan, más dicen de tus gustos):
+//   - Artistas que sigues (♥):    sus conciertos (la que más pesa) y su estilo
 //   - Salas favoritas (♥):        su tipo de local, sus estilos y el propio local
 //   - Entradas compradas:         estilo, local y tipo de local de esos eventos
 //   - Eventos que has abierto:    estilo y local (pesa poco: mirar no es comprar)
 //   - Amigos que van:             cada amigo con entrada suma
 //   - Cerca y pronto:             un empujón si está a menos de 3 km o en los próximos 3 días
 
-import { eventos } from '../data/eventos.js'
+import { artistaPorId } from '../data/artistas.js'
+import { artistasDe, eventos } from '../data/eventos.js'
 import { TIPO_DISCOTECA, salas } from '../data/salas.js'
 import { distanciaAConcierto } from './distancia.js'
 import { esProximo, fechaDentroDe } from './tiempo.js'
 
 // ---------- Constantes ----------
 const PESO = {
+  artista: { concierto: 4, genero: 2 },
   favorito: { local: 3, tipo: 2, genero: 1 },
   compra: { genero: 3, local: 2, tipo: 1 },
   visto: { genero: 1, local: 0.5 },
@@ -33,10 +36,17 @@ function sumar(mapa, clave, puntos) {
 }
 
 // Resume lo que se sabe del usuario: { generos, locales, tipos } con puntos de afinidad
-export function perfilDeGustos({ favoritos, entradas, vistos }) {
+// y los nombres de las artistas que sigue
+export function perfilDeGustos({ favoritos, artistasFavoritos = [], entradas, vistos }) {
   const generos = {}
   const locales = {}
   const tipos = {}
+  const artistas = new Set()
+
+  artistasFavoritos.map(artistaPorId).forEach((artista) => {
+    artistas.add(artista.nombre)
+    sumar(generos, artista.genero, PESO.artista.genero)
+  })
 
   favoritos.forEach((nombre) => {
     sumar(locales, nombre, PESO.favorito.local)
@@ -62,8 +72,8 @@ export function perfilDeGustos({ favoritos, entradas, vistos }) {
     sumar(locales, evento.sala, PESO.visto.local)
   })
 
-  const vacio = favoritos.length === 0 && comprados.length === 0 && vistos.length === 0
-  return { generos, locales, tipos, vacio }
+  const vacio = favoritos.length === 0 && artistas.size === 0 && comprados.length === 0 && vistos.length === 0
+  return { generos, locales, tipos, artistas, vacio }
 }
 
 // Lista de eventos recomendados: [{ evento, puntos, motivo }]
@@ -76,6 +86,8 @@ export function recomendar({ perfil, amigosQueVan, ubicacion, excluir, limite = 
     .map((evento) => {
       // Cada motivo con lo que aporta; el que más aporta es el que se enseña
       const motivos = []
+      const seguidas = artistasDe(evento).filter((artista) => perfil.artistas.has(artista.nombre))
+      if (seguidas.length > 0) motivos.push({ puntos: PESO.artista.concierto, texto: `Sigues a ${seguidas[0].nombre}` })
       const genero = perfil.generos[evento.genero] ?? 0
       if (genero > 0) motivos.push({ puntos: genero, texto: `Te gusta ${evento.genero.toLowerCase()}` })
       const local = perfil.locales[evento.sala] ?? 0

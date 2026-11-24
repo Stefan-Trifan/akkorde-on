@@ -81,9 +81,11 @@ function Buscador({
   local,
   artista,
   favoritos = [],
+  artistasFavoritos = [],
   onCambiarLocal,
   onCambiarArtista,
   onCambiarFavorito,
+  onCambiarArtistaFavorito,
   onVerLocal,
   onVerArtista,
 }) {
@@ -111,13 +113,20 @@ function Buscador({
       {artista !== TODOS && (
         <Elegido icono="🎤" nombre={artista} onQuitar={() => onCambiarArtista(TODOS)}>
           {artistaPorNombre(artista) ? (
-            <button
-              type="button"
-              onClick={() => onVerArtista(artistaPorNombre(artista))}
-              className="self-start text-sm font-semibold text-acento hover:underline"
-            >
-              {etiquetaArtista(artista)} · ver artista →
-            </button>
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => onVerArtista(artistaPorNombre(artista))}
+                className="text-sm font-semibold text-acento hover:underline"
+              >
+                {etiquetaArtista(artista)} · ver artista →
+              </button>
+              <BotonFavorito
+                activo={artistasFavoritos.includes(artistaPorNombre(artista).id)}
+                nombre={artista}
+                onCambiar={() => onCambiarArtistaFavorito(artistaPorNombre(artista).id)}
+              />
+            </div>
           ) : (
             <span className="text-sm text-suave">{etiquetaArtista(artista)}</span>
           )}

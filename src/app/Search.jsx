@@ -82,6 +82,8 @@ function Search({
   onLimpiar,
   favoritos,
   onCambiarFavorito,
+  artistasFavoritos,
+  onCambiarArtistaFavorito,
   onElegir,
   onVerLocal,
   onVerArtista,
@@ -112,9 +114,11 @@ function Search({
           local={local}
           artista={artista}
           favoritos={favoritos}
+          artistasFavoritos={artistasFavoritos}
           onCambiarLocal={onCambiarLocal}
           onCambiarArtista={onCambiarArtista}
           onCambiarFavorito={onCambiarFavorito}
+          onCambiarArtistaFavorito={onCambiarArtistaFavorito}
           onVerLocal={onVerLocal}
           onVerArtista={onVerArtista}
         />

@@ -1,3 +1,4 @@
+import BotonFavorito from '../components/BotonFavorito.jsx'
 import { COMUNIDAD_MADRID } from '../data/comunidades.js'
 import { conciertosFuera, eventos, proximosDe } from '../data/eventos.js'
 import { ubicacionDe } from '../data/salas.js'
@@ -35,7 +36,16 @@ function FechaGira({ concierto, onElegir }) {
 
 // Pantalla: ficha de una artista con sus conciertos en la Comunidad de Madrid y su gira fuera.
 // extra = conciertos que se han anunciado durante la demo (ver «Avísame si viene»)
-function ArtistDetail({ artista, ubicacion, extra = [], onElegir, onVolver, children }) {
+function ArtistDetail({
+  artista,
+  ubicacion,
+  extra = [],
+  esFavorita,
+  onCambiarFavorita,
+  onElegir,
+  onVolver,
+  children,
+}) {
   const todos = proximosDe(artista.nombre, [...eventos, ...conciertosFuera, ...extra])
   const enMadrid = todos.filter((concierto) => ubicacionDe(concierto.sala).comunidad === COMUNIDAD_MADRID)
   const fuera = todos.filter((concierto) => ubicacionDe(concierto.sala).comunidad !== COMUNIDAD_MADRID)
@@ -53,6 +63,12 @@ function ArtistDetail({ artista, ubicacion, extra = [], onElegir, onVolver, chil
         >
           ←
         </button>
+        <BotonFavorito
+          activo={esFavorita}
+          nombre={artista.nombre}
+          onCambiar={onCambiarFavorita}
+          className="absolute right-3 top-3 backdrop-blur"
+        />
       </div>
 
       <div className="flex flex-col gap-6 px-5 pb-8">
@@ -64,7 +80,20 @@ function ArtistDetail({ artista, ubicacion, extra = [], onElegir, onVolver, chil
           <p className="mt-2 text-suave">{artista.descripcion}</p>
         </div>
 
-        {/* Favorito y «Avísame si viene» (los pone AppView) */}
+        <button
+          type="button"
+          onClick={onCambiarFavorita}
+          aria-pressed={esFavorita}
+          className={`rounded-2xl border py-3 font-bold transition ${
+            esFavorita
+              ? 'border-pink-500/60 bg-pink-500/15 text-pink-400'
+              : 'border-borde bg-superficie text-texto hover:border-pink-500/60'
+          }`}
+        >
+          {esFavorita ? '♥ Siguiendo · sus conciertos salen en Inicio' : '♡ Seguir'}
+        </button>
+
+        {/* «Avísame si viene» (lo pone AppView) */}
         {children}
 
         <section className="flex flex-col gap-3">

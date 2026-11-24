@@ -107,6 +107,13 @@ function AppView({ onAbrirAvisame }) {
     setFavoritos((lista) => (lista.includes(nombre) ? lista.filter((otro) => otro !== nombre) : [...lista, nombre]))
   }
 
+  // Artistas que sigues (♥), por id: sus conciertos salen en Inicio y cuentan en las recomendaciones
+  const [artistasFavoritos, setArtistasFavoritos] = useState([])
+
+  function cambiarArtistaFavorito(id) {
+    setArtistasFavoritos((lista) => (lista.includes(id) ? lista.filter((otro) => otro !== id) : [...lista, id]))
+  }
+
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
     setVistos((lista) => (lista.includes(concierto.id) ? lista : [...lista, concierto.id]))
@@ -189,12 +196,15 @@ function AppView({ onAbrirAvisame }) {
           <Home
             ubicacion={ubicacion}
             favoritos={favoritos}
+            artistasFavoritos={artistasFavoritos}
             entradas={entradas}
             vistos={vistos}
             amigosQueVan={amigosQueVan}
             onCambiarFavorito={cambiarFavorito}
+            onCambiarArtistaFavorito={cambiarArtistaFavorito}
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
+            onVerArtista={verArtista}
           />
         )}
         {pantalla === 'buscar' && (
@@ -216,6 +226,8 @@ function AppView({ onAbrirAvisame }) {
             onLimpiar={limpiarFiltros}
             favoritos={favoritos}
             onCambiarFavorito={cambiarFavorito}
+            artistasFavoritos={artistasFavoritos}
+            onCambiarArtistaFavorito={cambiarArtistaFavorito}
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
             onVerArtista={verArtista}
@@ -225,6 +237,8 @@ function AppView({ onAbrirAvisame }) {
           <ArtistDetail
             artista={artistaElegido}
             ubicacion={ubicacion}
+            esFavorita={artistasFavoritos.includes(artistaElegido.id)}
+            onCambiarFavorita={() => cambiarArtistaFavorito(artistaElegido.id)}
             onElegir={elegirConcierto}
             onVolver={() => setPantalla(origenArtista)}
           />
