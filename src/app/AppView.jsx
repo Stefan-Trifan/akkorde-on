@@ -3,6 +3,7 @@ import Home from './Home.jsx'
 import Search from './Search.jsx'
 import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
+import ElegirEntradas from './ElegirEntradas.jsx'
 import MyTickets from './MyTickets.jsx'
 import Ticket from './Ticket.jsx'
 import VenueDetail from './VenueDetail.jsx'
@@ -40,6 +41,8 @@ function AppView({ onAbrirAvisame }) {
   // Ficha de local abierta y pantalla a la que vuelve
   const [localElegido, setLocalElegido] = useState(null)
   const [origenLocal, setOrigenLocal] = useState('buscar')
+  // Lo elegido en «Elegir entradas» antes de pagar (ver venta.js)
+  const [carrito, setCarrito] = useState(null)
 
   const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
 
@@ -68,12 +71,20 @@ function AppView({ onAbrirAvisame }) {
     setPantalla('local')
   }
 
-  // Añade una entrada nueva a la lista y la deja abierta para verla
-  function comprarEntrada() {
-    const codigo = crearCodigoEntrada(conciertoElegido)
-    const nueva = { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0 }
-    setEntradas([...entradas, nueva])
-    setIdAbierta(codigo)
+  // Pasa de «Elegir entradas» al pago con lo elegido
+  function irAPagar(nuevoCarrito) {
+    setCarrito(nuevoCarrito)
+    setPantalla('compra')
+  }
+
+  // Crea una entrada (con su QR) por cada persona de la compra
+  function comprarEntradas(plazas) {
+    const nuevas = plazas.map((plaza) => {
+      const codigo = crearCodigoEntrada(conciertoElegido)
+      return { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0, enviadaA: null, ...plaza }
+    })
+    setEntradas([...entradas, ...nuevas])
+    setIdAbierta(null)
   }
 
   // Cambia algunos datos de una entrada concreta
@@ -129,17 +140,25 @@ function AppView({ onAbrirAvisame }) {
         {pantalla === 'concierto' && (
           <EventDetail
             concierto={conciertoElegido}
-            onComprar={() => setPantalla('compra')}
+            onComprar={() => setPantalla('opciones')}
             onVolver={() => setPantalla(origen)}
             onVerLocal={verLocal}
+          />
+        )}
+        {pantalla === 'opciones' && (
+          <ElegirEntradas
+            concierto={conciertoElegido}
+            onContinuar={irAPagar}
+            onVolver={() => setPantalla('concierto')}
           />
         )}
         {pantalla === 'compra' && (
           <Checkout
             concierto={conciertoElegido}
-            onPagar={comprarEntrada}
-            onVerEntrada={() => setPantalla('entradas')}
-            onVolver={() => setPantalla('concierto')}
+            carrito={carrito}
+            onPagar={comprarEntradas}
+            onVerEntradas={() => setPantalla('entradas')}
+            onVolver={() => setPantalla('opciones')}
           />
         )}
         {pantalla === 'entradas' && !entradaAbierta && (
@@ -152,6 +171,7 @@ function AppView({ onAbrirAvisame }) {
             onVolver={() => setIdAbierta(null)}
             onRevender={() => actualizarEntrada(entradaAbierta.id, { enReventa: true })}
             onQuitarReventa={() => quitarReventa(entradaAbierta)}
+            onEnviar={(nombre) => actualizarEntrada(entradaAbierta.id, { enviadaA: nombre, asistente: nombre })}
           />
         )}
       </main>

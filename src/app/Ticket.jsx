@@ -38,19 +38,31 @@ function Confirmacion({ titulo, textoSi, onConfirmar, onCancelar, children }) {
 }
 
 // Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender
-function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
+function Ticket({ entrada, onVolver, onRevender, onQuitarReventa, onEnviar }) {
   const [qrVisible, setQrVisible] = useState(false)
-  // Qué se está confirmando: null, 'revender' o 'quitar'
+  // Qué se está confirmando: null, 'revender', 'quitar' o 'enviar'
   const [confirmando, setConfirmando] = useState(null)
+  // Nombre de la persona a la que se envía la entrada
+  const [destinatario, setDestinatario] = useState('')
   // Solo para la demo: hacer como si faltara 1 h para el concierto
   const [simularHora, setSimularHora] = useState(false)
 
-  const { concierto, codigo, enReventa, gastosExtra = 0 } = entrada
-  const pagado = precioFinal(concierto.precio)
-  const recibes = pagado - GASTOS_GESTION
+  const { concierto, codigo, enReventa, gastosExtra = 0, enviadaA } = entrada
+  // Las entradas de antes de las listas no traen precioPagado: se usa el precio del concierto
+  const pagado = entrada.precioPagado !== undefined ? entrada.precioPagado : precioFinal(concierto.precio)
+  // Solo se revenden las entradas normales (las listas y los reservados van a nombre de alguien)
+  const sePuedeRevender = (entrada.revendible ?? true) && pagado > 0
+  const recibes = sePuedeRevender ? pagado - GASTOS_GESTION : 0
   const ahora = simularHora ? momentoVerQr(concierto) : new Date()
   const sePuedeVer = puedeVerQr(concierto, ahora)
-  const mostrarQr = qrVisible && sePuedeVer && !enReventa
+  const mostrarQr = qrVisible && sePuedeVer && !enReventa && !enviadaA
+
+  // Envía la entrada a otra persona (simulado): deja de estar disponible en este móvil
+  function enviar() {
+    onEnviar(destinatario.trim())
+    setConfirmando(null)
+    setQrVisible(false)
+  }
 
   // Pone la entrada a la venta y vuelve a esconder el QR
   function revender() {
@@ -80,13 +92,28 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
             <p className="text-sm">
               {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
             </p>
+            {entrada.opcion && (
+              <p className="mt-2 inline-block rounded-full bg-fondo px-3 py-0.5 text-xs font-bold text-acento">
+                {entrada.opcion}
+              </p>
+            )}
+            {entrada.asistente && <p className="mt-1 text-sm font-semibold">A nombre de {entrada.asistente}</p>}
+            {entrada.detalle && <p className="text-xs">Incluye: {entrada.detalle}</p>}
+            {entrada.aviso && <p className="text-xs font-semibold">⏰ {entrada.aviso}</p>}
           </div>
 
           <div className="relative">
             <div className={`transition duration-500 ${mostrarQr ? '' : 'blur-md'}`} aria-hidden={!mostrarQr}>
               <QRCodeSVG value={codigo} size={176} />
             </div>
-            {enReventa ? (
+            {enviadaA ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-fondo/90 p-3 text-center text-acento">
+                <span className="text-2xl" aria-hidden="true">
+                  📤
+                </span>
+                <p className="text-sm font-bold">Enviada a {enviadaA}</p>
+              </div>
+            ) : enReventa ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-fondo/90 p-3 text-center text-acento">
                 <span className="text-2xl" aria-hidden="true">
                   🔄
@@ -104,7 +131,7 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
 
           <p className="font-mono text-xs">{mostrarQr ? codigo : 'AKK-••••••'}</p>
           <p className="text-xs">
-            Pagado: {formatearPrecio(pagado)}
+            {pagado === null ? 'Incluida en el reservado' : pagado === 0 ? 'Gratis' : `Pagado: ${formatearPrecio(pagado)}`}
             {gastosExtra > 0 && ` + ${formatearPrecio(gastosExtra)} por quitar la reventa`} · válida una sola vez
           </p>
         </div>
@@ -149,7 +176,35 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
           </Confirmacion>
         )}
 
-        {!confirmando && enReventa && (
+        {confirmando === 'enviar' && (
+          <Confirmacion
+            titulo="¿A quién se la envías?"
+            textoSi="Enviar"
+            onConfirmar={() => destinatario.trim() && enviar()}
+            onCancelar={() => setConfirmando(null)}
+          >
+            <p className="text-sm text-suave">
+              Le llegará a su Akkorde-on con su propio QR y dejará de estar en tu móvil.
+              {entrada.tipo !== 'entrada' && ' Al ser nominal, quedará a su nombre.'}
+            </p>
+            <input
+              type="text"
+              value={destinatario}
+              onChange={(evento) => setDestinatario(evento.target.value)}
+              placeholder="Nombre de tu amigo"
+              aria-label="Nombre de la persona"
+              className="rounded-xl border border-borde bg-fondo px-3 py-2 text-texto placeholder:text-suave focus:border-acento focus:outline-none"
+            />
+          </Confirmacion>
+        )}
+
+        {!confirmando && enviadaA && (
+          <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
+            Has enviado esta entrada a <strong className="text-texto">{enviadaA}</strong>. Ya la tiene en su móvil.
+          </p>
+        )}
+
+        {!confirmando && !enviadaA && enReventa && (
           <>
             <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
               Tu entrada está a la venta por {formatearPrecio(pagado)}. Todavía no la ha comprado nadie; cuando alguien la
@@ -161,7 +216,7 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
           </>
         )}
 
-        {!confirmando && !enReventa && (
+        {!confirmando && !enviadaA && !enReventa && (
           <>
             <Boton principal disabled={!sePuedeVer} onClick={() => setQrVisible(!qrVisible)}>
               {qrVisible ? 'Ocultar QR' : 'Ver QR'}
@@ -169,7 +224,8 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
             {!sePuedeVer && (
               <p className="text-center text-xs text-suave">Podrás verlo el {formatearMomento(momentoVerQr(concierto))}.</p>
             )}
-            <Boton onClick={() => setConfirmando('revender')}>Revender entrada</Boton>
+            <Boton onClick={() => setConfirmando('enviar')}>📤 Enviar a un amigo</Boton>
+            {sePuedeRevender && <Boton onClick={() => setConfirmando('revender')}>Revender entrada</Boton>}
           </>
         )}
 

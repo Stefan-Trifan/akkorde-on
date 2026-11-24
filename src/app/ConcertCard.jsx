@@ -1,5 +1,5 @@
 import { etiquetaTipo, iconoLocal } from '../data/salas.js'
-import { formatearPrecio, precioFinal } from './formato.js'
+import { textoDesde } from './venta.js'
 import { distanciaAConcierto, formatearDistancia } from './distancia.js'
 import { etiquetaFecha } from './tiempo.js'
 
@@ -32,7 +32,7 @@ function ConcertCard({ concierto, ubicacion, onElegir }) {
         </span>
         <div className="flex items-center justify-between">
           <span className="text-xs text-suave">{etiquetaTipo(concierto.sala)}</span>
-          <span className="font-bold text-texto">{formatearPrecio(precioFinal(concierto.precio))}</span>
+          <span className="font-bold text-texto">{textoDesde(concierto)}</span>
         </div>
       </div>
     </button>

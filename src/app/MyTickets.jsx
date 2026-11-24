@@ -16,6 +16,17 @@ function TicketRow({ entrada, onAbrir }) {
         <span className="text-sm">
           {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
         </span>
+        {(entrada.opcion || entrada.asistente) && (
+          <span className="text-xs font-semibold">
+            {entrada.opcion}
+            {entrada.asistente && ` · ${entrada.asistente}`}
+          </span>
+        )}
+        {entrada.enviadaA && (
+          <span className="w-fit rounded-full bg-fondo px-2 py-0.5 text-xs font-bold text-acento">
+            Enviada a {entrada.enviadaA}
+          </span>
+        )}
         {enReventa && (
           <span className="w-fit rounded-full bg-fondo px-2 py-0.5 text-xs font-bold text-acento">En reventa</span>
         )}

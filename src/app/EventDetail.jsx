@@ -1,5 +1,6 @@
 import { cartelDe, infoAcceso } from '../data/eventos.js'
 import { iconoLocal } from '../data/salas.js'
+import { opcionesVenta, precioDesde, tieneVariasOpciones } from './venta.js'
 import {
   GASTOS_GESTION,
   formatearFecha,
@@ -23,6 +24,9 @@ function Dato({ titulo, children }) {
 function EventDetail({ concierto, onComprar, onVolver, onVerLocal }) {
   const total = precioFinal(concierto.precio)
   const acceso = infoAcceso(concierto)
+  const { listas, entradas, reservados, mostrar } = opcionesVenta(concierto)
+  const variasOpciones = tieneVariasOpciones(concierto)
+  const desde = precioDesde(concierto)
 
   return (
     <div className="flex flex-col">
@@ -81,27 +85,54 @@ function EventDetail({ concierto, onComprar, onVolver, onVerLocal }) {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-borde bg-superficie p-4 text-sm">
-          <div className="flex justify-between text-suave">
-            <span>Entrada</span>
-            <span>{formatearPrecio(concierto.precio)}</span>
+        {variasOpciones ? (
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-suave">A la venta</h2>
+            <ul className="flex flex-wrap gap-2 text-sm">
+              {listas.length > 0 && (
+                <li className="rounded-full bg-superficie px-3 py-1 text-texto">
+                  📝 {listas.length} {listas.length === 1 ? 'lista' : 'listas'}
+                </li>
+              )}
+              <li className="rounded-full bg-superficie px-3 py-1 text-texto">
+                🎟️ {entradas.length} {entradas.length === 1 ? 'tipo de entrada' : 'tipos de entrada'}
+                {entradas.some((entrada) => entrada.tramos) && ' · por tramos'}
+              </li>
+              {reservados.length > 0 && (
+                <li className="rounded-full bg-superficie px-3 py-1 text-texto">
+                  🛋️ Reservados{mostrar.mapa && ' · con plano'}
+                </li>
+              )}
+            </ul>
           </div>
-          <div className="flex justify-between text-suave">
-            <span>Gastos de gestión</span>
-            <span>{formatearPrecio(GASTOS_GESTION)}</span>
+        ) : (
+          <div className="rounded-2xl border border-borde bg-superficie p-4 text-sm">
+            <div className="flex justify-between text-suave">
+              <span>Entrada</span>
+              <span>{formatearPrecio(concierto.precio)}</span>
+            </div>
+            <div className="flex justify-between text-suave">
+              <span>Gastos de gestión</span>
+              <span>{formatearPrecio(GASTOS_GESTION)}</span>
+            </div>
+            <div className="mt-2 flex justify-between border-t border-borde pt-2 text-base font-bold text-texto">
+              <span>Total por entrada</span>
+              <span>{formatearPrecio(total)}</span>
+            </div>
           </div>
-          <div className="mt-2 flex justify-between border-t border-borde pt-2 text-base font-bold text-texto">
-            <span>Total</span>
-            <span>{formatearPrecio(total)}</span>
-          </div>
-        </div>
+        )}
 
         <button
           type="button"
           onClick={onComprar}
-          className="rounded-2xl bg-acento py-3 font-bold text-fondo transition hover:brightness-110"
+          disabled={desde === null}
+          className="rounded-2xl bg-acento py-3 font-bold text-fondo transition hover:brightness-110 disabled:opacity-30"
         >
-          Comprar por {formatearPrecio(total)}
+          {desde === null
+            ? 'Agotado'
+            : variasOpciones
+              ? `Elegir entradas · desde ${desde === 0 ? 'gratis' : formatearPrecio(desde)}`
+              : `Comprar · ${formatearPrecio(total)} por entrada`}
         </button>
       </div>
     </div>

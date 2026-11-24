@@ -1,7 +1,8 @@
 import { cartelDe, eventos, infoAcceso } from '../data/eventos.js'
 import { iconoLocal, salas } from '../data/salas.js'
 import { distanciaAConcierto, formatearDistancia } from './distancia.js'
-import { formatearPrecio, precioFinal, textoDressCode, textoEdad } from './formato.js'
+import { textoDressCode, textoEdad } from './formato.js'
+import { textoDesde } from './venta.js'
 import { esProximo, etiquetaFecha } from './tiempo.js'
 
 // Día y mes por separado para la columna de fecha de la agenda: "28" y "NOV"
@@ -98,7 +99,7 @@ function VenueDetail({ nombre, ubicacion, onElegir, onVolver }) {
                       Este día: {textoEdad(acceso.edadMinima)} · {textoDressCode(acceso.dressCode)}
                     </span>
                   )}
-                  <span className="mt-1 font-bold text-texto">{formatearPrecio(precioFinal(evento.precio))}</span>
+                  <span className="mt-1 font-bold text-texto">{textoDesde(evento)}</span>
                 </div>
               </button>
             )

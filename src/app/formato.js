@@ -4,9 +4,9 @@ export const GASTOS_GESTION = 1
 // Opción del filtro de búsqueda que enseña todos los géneros
 export const TODOS = 'Todos'
 
-// Precio final de una entrada: precio del concierto + gastos
+// Precio final de una entrada: precio + gastos (lo gratis no paga gastos)
 export function precioFinal(precio) {
-  return precio + GASTOS_GESTION
+  return precio === 0 ? 0 : precio + GASTOS_GESTION
 }
 
 // Precio en euros al estilo español: 19 → "19 €", 18.5 → "18,50 €"
