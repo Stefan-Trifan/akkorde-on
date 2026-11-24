@@ -1,3 +1,4 @@
+import { esConcierto } from '../data/eventos.js'
 import { formatearFecha } from './formato.js'
 
 // Agrupa las entradas por evento, de la más próxima a la más lejana: [{ concierto, entradas }]
@@ -90,7 +91,23 @@ function RegaladaRow({ entrada, onAbrir }) {
   )
 }
 
-// Pantalla «Mis entradas»: primero las que aún tienes (juntas por evento) y al final las que ya has dado
+// Bloque de entradas de un tipo de plan (conciertos o fiestas); vacío no se pinta
+function Bloque({ titulo, grupos, onAbrir }) {
+  if (grupos.length === 0) return null
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-suave">
+        {titulo} · {grupos.length}
+      </h2>
+      {grupos.map((grupo) => (
+        <GrupoRow key={grupo.concierto.id} grupo={grupo} onAbrir={onAbrir} />
+      ))}
+    </section>
+  )
+}
+
+// Pantalla «Mis entradas»: primero las que aún tienes (juntas por evento) y al final las que ya has dado.
+// Los conciertos van arriba del todo: se va a menos conciertos que fiestas y cada entrada es más especial
 function MyTickets({ entradas, onAbrir, onBuscar }) {
   if (entradas.length === 0) {
     return (
@@ -104,6 +121,8 @@ function MyTickets({ entradas, onAbrir, onBuscar }) {
   }
 
   const grupos = agruparPorEvento(entradas.filter((entrada) => !entrada.enviadaA))
+  const conciertos = grupos.filter((grupo) => esConcierto(grupo.concierto))
+  const fiestas = grupos.filter((grupo) => !esConcierto(grupo.concierto))
   const regaladas = entradas
     .filter((entrada) => entrada.enviadaA)
     .sort((a, b) => a.concierto.fecha.localeCompare(b.concierto.fecha))
@@ -120,9 +139,8 @@ function MyTickets({ entradas, onAbrir, onBuscar }) {
       ) : (
         <p className="text-sm text-suave">Ya has dado todas tus entradas.</p>
       )}
-      {grupos.map((grupo) => (
-        <GrupoRow key={grupo.concierto.id} grupo={grupo} onAbrir={onAbrir} />
-      ))}
+      <Bloque titulo="🎤 Conciertos" grupos={conciertos} onAbrir={onAbrir} />
+      <Bloque titulo="🪩 Fiestas" grupos={fiestas} onAbrir={onAbrir} />
 
       {regaladas.length > 0 && (
         <section className="mt-4 flex flex-col gap-2 border-t border-borde pt-4">

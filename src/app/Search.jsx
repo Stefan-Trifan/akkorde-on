@@ -1,5 +1,4 @@
-import { cartelDe, eventos } from '../data/eventos.js'
-import { TIPO_DISCOTECA, salas } from '../data/salas.js'
+import { cartelDe, esConcierto, eventos } from '../data/eventos.js'
 import Buscador from './Buscador.jsx'
 import ConcertCard from './ConcertCard.jsx'
 import UbicacionSelector from './UbicacionSelector.jsx'
@@ -24,9 +23,8 @@ function cumpleFecha(evento, cuando) {
 
 // ¿Es el evento del tipo de plan elegido? Las fiestas son las de discoteca; lo demás, conciertos
 function cumpleTipo(evento, tipoPlan) {
-  const esFiesta = salas[evento.sala]?.tipo === TIPO_DISCOTECA
-  if (tipoPlan === 'conciertos') return !esFiesta
-  if (tipoPlan === 'fiestas') return esFiesta
+  if (tipoPlan === 'conciertos') return esConcierto(evento)
+  if (tipoPlan === 'fiestas') return !esConcierto(evento)
   return true
 }
 

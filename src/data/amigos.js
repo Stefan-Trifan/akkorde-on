@@ -37,6 +37,12 @@ export const asistencia = {
   'fitz-house-sessions': ['marcos_r'],
   'opium-dinner-club': ['irene.v', 'hugo.n'],
   'puri-cabaret': ['lucia.mg', 'dani.cb'],
+  // Conciertos de las giras (giras.js)
+  'aurora-vega-madrid': ['lucia.mg', 'marcos_r', 'sofia.p'],
+  'nilo-sur-madrid': ['irene.v'],
+  'los-satelites-madrid': ['dani.cb', 'hugo.n'],
+  'bruma-madrid': ['marcos_r'],
+  'los-satelites-alcala': ['lucia.mg'],
 }
 
 // Busca un usuario por su id

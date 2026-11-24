@@ -16,6 +16,11 @@ const COMPRAS = [
   { evento: 'fitz-noche-latina', asistente: null },
   { evento: 'kapital-techno', asistente: nombreCompleto(MI_PERFIL) },
   { evento: 'kapital-techno', asistente: null, enviadaA: nombreCompleto(usuarioPorId('dani.cb')) },
+  // Conciertos (salen arriba del todo en «Mis entradas»)
+  { evento: 'nilo-sur-madrid', asistente: nombreCompleto(MI_PERFIL) },
+  { evento: 'nilo-sur-madrid', asistente: nombreCompleto(usuarioPorId('lucia.mg')) },
+  { evento: 'aurora-vega-madrid', asistente: nombreCompleto(MI_PERFIL) },
+  { evento: 'aurora-vega-madrid', asistente: null, enviadaA: nombreCompleto(usuarioPorId('marcos_r')) },
 ]
 
 // Crea las entradas con el mismo formato que una compra real (ver AppView › comprarEntradas)

@@ -5,7 +5,12 @@ import { conciertos } from './conciertos.js'
 import { conciertosExtra } from './conciertosExtra.js'
 import { sesionesDiscoteca } from './discotecas.js'
 import { conciertosGira } from './giras.js'
-import { salas, ubicacionDe } from './salas.js'
+import { TIPO_DISCOTECA, salas, ubicacionDe } from './salas.js'
+
+// ¿Es un concierto? Todo lo que no es en discoteca (las sesiones de discoteca son las «fiestas»)
+export function esConcierto(evento) {
+  return salas[evento.sala]?.tipo !== TIPO_DISCOTECA
+}
 
 // ¿Está el evento en la Comunidad de Madrid? (donde vende la app)
 function enComunidadDeMadrid(evento) {
