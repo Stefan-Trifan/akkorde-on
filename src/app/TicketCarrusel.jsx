@@ -19,7 +19,7 @@ function Flecha({ lado, onClick, etiqueta }) {
 
 // Entradas de un mismo evento una al lado de otra: se pasa de una a otra deslizando (móvil, trackpad)
 // o con las flechas (ratón) y las teclas ← →. Las flechas solo salen si hay más entradas en ese lado.
-function TicketCarrusel({ entradas, onVolver, onRevender, onQuitarReventa, onEnviar }) {
+function TicketCarrusel({ entradas, amigos, onVolver, onRevender, onQuitarReventa, onEnviar }) {
   const carril = useRef(null)
   const [indice, setIndice] = useState(0)
   const hayIzquierda = indice > 0
@@ -97,6 +97,7 @@ function TicketCarrusel({ entradas, onVolver, onRevender, onQuitarReventa, onEnv
             <div key={entrada.id} className="w-full shrink-0 snap-center snap-always">
               <Ticket
                 entrada={entrada}
+                amigos={amigos}
                 onRevender={() => onRevender(entrada)}
                 onQuitarReventa={() => onQuitarReventa(entrada)}
                 onEnviar={(nombre) => onEnviar(entrada, nombre)}

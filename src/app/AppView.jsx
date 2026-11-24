@@ -7,6 +7,10 @@ import ElegirEntradas from './ElegirEntradas.jsx'
 import MyTickets from './MyTickets.jsx'
 import TicketCarrusel from './TicketCarrusel.jsx'
 import VenueDetail from './VenueDetail.jsx'
+import Amigos from './Amigos.jsx'
+import { AMIGOS_INICIALES, SOLICITUDES_INICIALES, asistencia, usuarioPorId } from '../data/amigos.js'
+import { eventos } from '../data/eventos.js'
+import { esProximo } from './tiempo.js'
 import { UBICACION_INICIAL } from '../data/zonas.js'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
@@ -17,8 +21,11 @@ const PESTANAS = [
   { pantalla: 'inicio', texto: 'Inicio', icono: '🏠' },
   { pantalla: 'buscar', texto: 'Buscar', icono: '🔍' },
   { pantalla: 'entradas', texto: 'Mis entradas', icono: '🎟️' },
+  { pantalla: 'amigos', texto: 'Amigos', icono: '👥' },
   { pantalla: 'avisame', texto: 'Avísame', icono: '🔔' },
 ]
+// Segundos que tarda en «aceptar» una solicitud de amistad en la demo
+const SEGUNDOS_ACEPTAR = 3
 
 // Vista App: la demo de Akkorde-on como app de móvil
 function AppView({ onAbrirAvisame }) {
@@ -45,6 +52,38 @@ function AppView({ onAbrirAvisame }) {
   const [carrito, setCarrito] = useState(null)
   // Datos del comprador si marcó «Recordar mis datos» (solo en memoria, se pierden al recargar)
   const [datosGuardados, setDatosGuardados] = useState(null)
+
+  // ---------- Amigos (ver data/amigos.js) ----------
+  const [amigos, setAmigos] = useState(AMIGOS_INICIALES)
+  const [recibidas, setRecibidas] = useState(SOLICITUDES_INICIALES)
+  const [enviadas, setEnviadas] = useState([])
+  const perfilesAmigos = amigos.map(usuarioPorId)
+
+  // Envía una solicitud; en la demo la otra persona la acepta sola a los 3 segundos
+  function enviarSolicitud(id) {
+    setEnviadas((lista) => [...lista, id])
+    setTimeout(() => {
+      setEnviadas((lista) => lista.filter((otro) => otro !== id))
+      setAmigos((lista) => (lista.includes(id) ? lista : [...lista, id]))
+    }, SEGUNDOS_ACEPTAR * 1000)
+  }
+
+  function aceptarSolicitud(id) {
+    setRecibidas((lista) => lista.filter((otro) => otro !== id))
+    setAmigos((lista) => (lista.includes(id) ? lista : [...lista, id]))
+  }
+
+  // Amigos que ya tienen entrada para un evento
+  function amigosQueVan(evento) {
+    return (asistencia[evento.id] ?? []).filter((id) => amigos.includes(id)).map(usuarioPorId)
+  }
+
+  // Próximos planes de un amigo: nombres de los eventos a los que va
+  function planesDe(id) {
+    return eventos
+      .filter((evento) => esProximo(evento) && (asistencia[evento.id] ?? []).includes(id))
+      .map((evento) => evento.nombre)
+  }
 
   // Entradas abiertas, en el orden en que se abrieron (aunque una se envíe, sigue en el carrusel hasta salir)
   const entradasAbiertas = idsAbiertos.map((id) => entradas.find((entrada) => entrada.id === id)).filter(Boolean)
@@ -143,6 +182,7 @@ function AppView({ onAbrirAvisame }) {
         {pantalla === 'concierto' && (
           <EventDetail
             concierto={conciertoElegido}
+            amigosQueVan={amigosQueVan(conciertoElegido)}
             onComprar={() => setPantalla('opciones')}
             onVolver={() => setPantalla(origen)}
             onVerLocal={verLocal}
@@ -160,6 +200,7 @@ function AppView({ onAbrirAvisame }) {
             concierto={conciertoElegido}
             carrito={carrito}
             datosGuardados={datosGuardados}
+            amigos={perfilesAmigos}
             onGuardarDatos={setDatosGuardados}
             onPagar={comprarEntradas}
             onVerEntradas={() => setPantalla('entradas')}
@@ -176,7 +217,20 @@ function AppView({ onAbrirAvisame }) {
             onVolver={() => setIdsAbiertos([])}
             onRevender={(entrada) => actualizarEntrada(entrada.id, { enReventa: true })}
             onQuitarReventa={quitarReventa}
+            amigos={perfilesAmigos}
             onEnviar={(entrada, nombre) => actualizarEntrada(entrada.id, { enviadaA: nombre, asistente: nombre })}
+          />
+        )}
+        {pantalla === 'amigos' && (
+          <Amigos
+            amigos={amigos}
+            recibidas={recibidas}
+            enviadas={enviadas}
+            planesDe={planesDe}
+            onEnviarSolicitud={enviarSolicitud}
+            onAceptar={aceptarSolicitud}
+            onRechazar={(id) => setRecibidas((lista) => lista.filter((otro) => otro !== id))}
+            onEliminar={(id) => setAmigos((lista) => lista.filter((otro) => otro !== id))}
           />
         )}
       </main>
@@ -192,10 +246,20 @@ function AppView({ onAbrirAvisame }) {
               pantalla === pestana.pantalla ? 'text-acento' : 'text-suave'
             }`}
           >
-            <span className="text-lg" aria-hidden="true">
+            <span className="relative text-lg" aria-hidden="true">
               {pestana.icono}
+              {pestana.pantalla === 'amigos' && recibidas.length > 0 && (
+                <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-acento px-1 text-[10px] font-bold text-fondo">
+                  {recibidas.length}
+                </span>
+              )}
             </span>
             {pestana.texto}
+            {pestana.pantalla === 'amigos' && recibidas.length > 0 && (
+              <span className="sr-only">
+                , {recibidas.length} {recibidas.length === 1 ? 'solicitud nueva' : 'solicitudes nuevas'}
+              </span>
+            )}
           </button>
         ))}
       </nav>

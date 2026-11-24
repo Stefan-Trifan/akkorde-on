@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import Avatar from '../components/Avatar.jsx'
+import { MI_PERFIL } from '../data/amigos.js'
 import { infoAcceso } from '../data/eventos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio } from './formato.js'
 import { edadEnFecha, horasLlegada, opcionesVenta, plazasDelCarrito, totalCarrito } from './venta.js'
@@ -103,6 +105,41 @@ function Casilla({ marcada, onCambiar, children }) {
   )
 }
 
+// Fila deslizable con «Yo» y tus amigos: al pulsar uno se rellenan sus datos de un toque
+function RellenarCon({ personas, onElegir }) {
+  if (personas.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs text-suave">Rellenar con:</span>
+      <div className="sin-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+        {personas.map((persona) => (
+          <button
+            key={persona.id}
+            type="button"
+            onClick={() => onElegir(persona)}
+            className="flex shrink-0 items-center gap-2 rounded-full border border-borde py-1 pl-1 pr-3 text-sm text-texto transition hover:border-acento"
+          >
+            <Avatar persona={persona} tamano="s" />
+            {persona.id === MI_PERFIL.id ? 'Yo' : persona.nombre}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Datos de una persona (tu perfil o un amigo) que se copian al formulario
+function datosDe(persona) {
+  return {
+    nombre: persona.nombre,
+    apellidos: persona.apellidos,
+    email: persona.email,
+    prefijo: persona.prefijo,
+    telefono: persona.telefono,
+    nacimiento: persona.nacimiento,
+  }
+}
+
 // Bloque desplegable de un asistente (como un acordeón): cabecera con estado y contenido
 function Desplegable({ titulo, subtitulo, abierto, completo, onAlternar, children }) {
   return (
@@ -138,7 +175,7 @@ function Desplegable({ titulo, subtitulo, abierto, completo, onAlternar, childre
 
 // Pantalla 4: datos de cada asistente (o del titular del reservado) y pago simulado.
 // No se paga de verdad ni se piden datos de tarjeta.
-function Checkout({ concierto, carrito, datosGuardados, onGuardarDatos, onPagar, onVerEntradas, onVolver }) {
+function Checkout({ concierto, carrito, datosGuardados, amigos = [], onGuardarDatos, onPagar, onVerEntradas, onVolver }) {
   const { pideDni, reservadoHasta, senalReservado } = opcionesVenta(concierto)
   const { edadMinima } = infoAcceso(concierto)
   const plazas = plazasDelCarrito(carrito)
@@ -179,6 +216,21 @@ function Checkout({ concierto, carrito, datosGuardados, onGuardarDatos, onPagar,
   }
   function cambiarTitular(campo, valor) {
     setTitular({ ...titular, [campo]: valor })
+  }
+
+  // «Yo» y tus amigos que todavía no están en otra ficha (se comparan por email)
+  const personas = [MI_PERFIL, ...amigos]
+  function personasLibres(indice) {
+    const usados = asistentes.filter((_, i) => i !== indice).map((datos) => datos.email.trim().toLowerCase())
+    return personas.filter((persona) => !usados.includes(persona.email))
+  }
+
+  // Rellena una ficha con los datos de una persona y abre la siguiente sin completar
+  function rellenarAsistente(indice, persona) {
+    const nuevos = asistentes.map((datos, i) => (i === indice ? { ...datos, ...datosDe(persona) } : datos))
+    setAsistentes(nuevos)
+    const siguiente = nuevos.findIndex((datos) => Object.keys(erroresAsistente(datos, reglas)).length > 0)
+    setAbierto(siguiente >= 0 ? siguiente : reservado ? 'titular' : null)
   }
 
   // Si falta algo, se marcan los errores y se abre el primer bloque incompleto
@@ -291,6 +343,7 @@ function Checkout({ concierto, carrito, datosGuardados, onGuardarDatos, onPagar,
             completo={completo}
             onAlternar={() => setAbierto(abierto === i ? null : i)}
           >
+            <RellenarCon personas={personasLibres(i)} onElegir={(persona) => rellenarAsistente(i, persona)} />
             <div className="grid grid-cols-2 gap-3">
               <Campo etiqueta="Nombre" error={err.nombre} mostrarError={intentado}>
                 <input
@@ -363,6 +416,7 @@ function Checkout({ concierto, carrito, datosGuardados, onGuardarDatos, onPagar,
           completo={Object.keys(erroresDelTitular).length === 0}
           onAlternar={() => setAbierto(abierto === 'titular' ? null : 'titular')}
         >
+          <RellenarCon personas={personas} onElegir={(persona) => setTitular({ ...titular, ...datosDe(persona) })} />
           <div className="grid grid-cols-2 gap-3">
             <Campo etiqueta="Nombre" error={erroresDelTitular.nombre} mostrarError={intentado}>
               <input

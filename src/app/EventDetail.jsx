@@ -1,3 +1,4 @@
+import Avatar from '../components/Avatar.jsx'
 import { cartelDe, infoAcceso } from '../data/eventos.js'
 import { iconoLocal } from '../data/salas.js'
 import { opcionesVenta, precioDesde, tieneVariasOpciones } from './venta.js'
@@ -21,7 +22,16 @@ function Dato({ titulo, children }) {
 }
 
 // Pantalla 3: ficha del evento con el precio final ya calculado
-function EventDetail({ concierto, onComprar, onVolver, onVerLocal }) {
+// Texto de quién va: "Lucía va", "Lucía y Marcos van", "Lucía, Marcos y 2 amigos más van"
+function textoAmigos(amigos) {
+  const nombres = amigos.map((amigo) => amigo.nombre)
+  if (nombres.length === 1) return `${nombres[0]} va`
+  if (nombres.length === 2) return `${nombres[0]} y ${nombres[1]} van`
+  const resto = nombres.length - 2
+  return `${nombres[0]}, ${nombres[1]} y ${resto} ${resto === 1 ? 'amigo' : 'amigos'} más van`
+}
+
+function EventDetail({ concierto, amigosQueVan = [], onComprar, onVolver, onVerLocal }) {
   const total = precioFinal(concierto.precio)
   const acceso = infoAcceso(concierto)
   const { listas, entradas, reservados, mostrar } = opcionesVenta(concierto)
@@ -66,6 +76,19 @@ function EventDetail({ concierto, onComprar, onVolver, onVerLocal }) {
             →
           </span>
         </button>
+
+        {amigosQueVan.length > 0 && (
+          <div className="flex items-center gap-3 rounded-2xl bg-acento/10 p-3">
+            <div className="flex -space-x-2">
+              {amigosQueVan.slice(0, 3).map((amigo) => (
+                <Avatar key={amigo.id} persona={amigo} tamano="s" className="ring-2 ring-fondo" />
+              ))}
+            </div>
+            <p className="text-sm text-texto">
+              👥 <strong>{textoAmigos(amigosQueVan)}</strong>
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-2 text-sm">
           <Dato titulo="Fecha">{formatearFecha(concierto.fecha)}</Dato>

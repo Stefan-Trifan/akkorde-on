@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
+import Avatar from '../components/Avatar.jsx'
+import { nombreCompleto } from '../data/amigos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio, precioFinal } from './formato.js'
 import { HORAS_ANTES_QR, formatearMomento, momentoVerQr, puedeVerQr } from './tiempo.js'
 
@@ -39,7 +41,7 @@ function Confirmacion({ titulo, textoSi, onConfirmar, onCancelar, children }) {
 
 // Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender.
 // Se enseña dentro de TicketCarrusel, que pone la cabecera y las flechas.
-function Ticket({ entrada, onRevender, onQuitarReventa, onEnviar }) {
+function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar }) {
   const [qrVisible, setQrVisible] = useState(false)
   // Qué se está confirmando: null, 'revender', 'quitar' o 'enviar'
   const [confirmando, setConfirmando] = useState(null)
@@ -184,14 +186,45 @@ function Ticket({ entrada, onRevender, onQuitarReventa, onEnviar }) {
               Le llegará a su Akkorde-on con su propio QR y dejará de estar en tu móvil.
               {entrada.tipo !== 'entrada' && ' Al ser nominal, quedará a su nombre.'}
             </p>
-            <input
-              type="text"
-              value={destinatario}
-              onChange={(evento) => setDestinatario(evento.target.value)}
-              placeholder="Nombre de tu amigo"
-              aria-label="Nombre de la persona"
-              className="rounded-xl border border-borde bg-fondo px-3 py-2 text-texto placeholder:text-suave focus:border-acento focus:outline-none"
-            />
+            {amigos.length > 0 && (
+              <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto" aria-label="Tus amigos">
+                {amigos.map((amigo) => {
+                  const nombre = nombreCompleto(amigo)
+                  const elegido = destinatario === nombre
+                  return (
+                    <li key={amigo.id}>
+                      <button
+                        type="button"
+                        onClick={() => setDestinatario(elegido ? '' : nombre)}
+                        aria-pressed={elegido}
+                        className={`flex w-full items-center gap-3 rounded-xl p-2 text-left transition ${
+                          elegido ? 'bg-acento/15 ring-1 ring-acento' : 'hover:bg-fondo'
+                        }`}
+                      >
+                        <Avatar persona={amigo} tamano="s" />
+                        <span className="flex-1 text-sm text-texto">{nombre}</span>
+                        <span className={`text-sm ${elegido ? 'text-acento' : 'text-transparent'}`} aria-hidden="true">
+                          ✓
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-suave">
+                {amigos.length > 0 ? 'O a otra persona (le llegará una invitación a Akkorde-on)' : 'Nombre de la persona'}
+              </span>
+              <input
+                type="text"
+                value={amigos.some((amigo) => nombreCompleto(amigo) === destinatario) ? '' : destinatario}
+                onChange={(evento) => setDestinatario(evento.target.value)}
+                placeholder="Nombre y apellidos"
+                aria-label="Nombre de la persona"
+                className="rounded-xl border border-borde bg-fondo px-3 py-2 text-texto placeholder:text-suave focus:border-acento focus:outline-none"
+              />
+            </label>
           </Confirmacion>
         )}
 
