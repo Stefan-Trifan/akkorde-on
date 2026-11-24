@@ -2,10 +2,14 @@
 // Coordenadas aproximadas, sacadas de su dirección. Descripción, edad mínima y
 // código de vestimenta son datos de ejemplo para la demo (no oficiales).
 // edadMinima y dressCode = null → el local no pide nada especial.
+// municipio y comunidad: solo los llevan los locales de fuera de Madrid capital (giras, ver giras.js).
+
+import { COMUNIDAD_MADRID } from './comunidades.js'
 
 // ---------- Constantes ----------
 export const TIPO_SALA = 'Sala de conciertos'
 export const TIPO_DISCOTECA = 'Discoteca'
+const MUNICIPIO_MADRID = 'Madrid'
 
 export const salas = {
   // ----- Discotecas -----
@@ -173,6 +177,129 @@ export const salas = {
     edadMinima: null,
     dressCode: null,
   },
+
+  // ----- Comunidad de Madrid, fuera de la capital (giras) -----
+  'Teatro Salón Cervantes': {
+    tipo: TIPO_SALA,
+    direccion: 'C/ de Cervantes, 7',
+    municipio: 'Alcalá de Henares',
+    comunidad: COMUNIDAD_MADRID,
+    lat: 40.4816,
+    lng: -3.3647,
+    descripcion: 'Teatro histórico en el centro de Alcalá de Henares.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Teatro Federico García Lorca': {
+    tipo: TIPO_SALA,
+    direccion: 'C/ de Ramón y Cajal, 22',
+    municipio: 'Getafe',
+    comunidad: COMUNIDAD_MADRID,
+    lat: 40.3057,
+    lng: -3.7329,
+    descripcion: 'Teatro municipal de Getafe con programación de conciertos.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Teatro del Bosque': {
+    tipo: TIPO_SALA,
+    direccion: 'Av. de Portugal, s/n',
+    municipio: 'Móstoles',
+    comunidad: COMUNIDAD_MADRID,
+    lat: 40.326,
+    lng: -3.877,
+    descripcion: 'Teatro municipal de Móstoles, junto al parque.',
+    edadMinima: null,
+    dressCode: null,
+  },
+
+  // ----- Otras comunidades (giras) -----
+  'Teatro Buero Vallejo': {
+    tipo: TIPO_SALA,
+    direccion: 'C/ de Cifuentes, 30',
+    municipio: 'Guadalajara',
+    comunidad: 'Castilla-La Mancha',
+    lat: 40.6327,
+    lng: -3.166,
+    descripcion: 'Teatro municipal de Guadalajara.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Teatro de Rojas': {
+    tipo: TIPO_SALA,
+    direccion: 'Pl. Mayor, s/n',
+    municipio: 'Toledo',
+    comunidad: 'Castilla-La Mancha',
+    lat: 39.8575,
+    lng: -4.0225,
+    descripcion: 'Teatro del siglo XIX en el casco histórico de Toledo.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  Razzmatazz: {
+    tipo: TIPO_SALA,
+    direccion: 'C/ dels Almogàvers, 122',
+    municipio: 'Barcelona',
+    comunidad: 'Cataluña',
+    lat: 41.3976,
+    lng: 2.1911,
+    descripcion: 'Sala grande de Poblenou con varias salas y conciertos de gira.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Palau de la Música de València': {
+    tipo: TIPO_SALA,
+    direccion: "Pg. de l'Albereda, 30",
+    municipio: 'València',
+    comunidad: 'Comunitat Valenciana',
+    lat: 39.4727,
+    lng: -0.3622,
+    descripcion: 'Auditorio junto al antiguo cauce del Turia.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Teatro Lope de Vega': {
+    tipo: TIPO_SALA,
+    direccion: 'Av. de María Luisa, s/n',
+    municipio: 'Sevilla',
+    comunidad: 'Andalucía',
+    lat: 37.38,
+    lng: -5.9893,
+    descripcion: 'Teatro junto al parque de María Luisa.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Kafe Antzokia': {
+    tipo: TIPO_SALA,
+    direccion: 'C/ de San Vicente, 2',
+    municipio: 'Bilbao',
+    comunidad: 'País Vasco',
+    lat: 43.2631,
+    lng: -2.9293,
+    descripcion: 'Sala de conciertos en un antiguo cine del centro de Bilbao.',
+    edadMinima: null,
+    dressCode: null,
+  },
+  'Auditorio de Zaragoza': {
+    tipo: TIPO_SALA,
+    direccion: 'C/ de Eduardo Ibarra, 3',
+    municipio: 'Zaragoza',
+    comunidad: 'Aragón',
+    lat: 41.6402,
+    lng: -0.8986,
+    descripcion: 'Auditorio con salas para conciertos grandes y pequeños.',
+    edadMinima: null,
+    dressCode: null,
+  },
+}
+
+// Municipio y comunidad de un local; si no lo dice, está en Madrid capital
+export function ubicacionDe(nombre) {
+  const local = salas[nombre] ?? {}
+  return {
+    municipio: local.municipio ?? MUNICIPIO_MADRID,
+    comunidad: local.comunidad ?? COMUNIDAD_MADRID,
+  }
 }
 
 // Icono y etiqueta corta según el tipo de local
@@ -187,6 +314,7 @@ export function etiquetaTipo(nombre) {
 export const NOMBRES_DISCOTECAS = Object.keys(salas)
   .filter((nombre) => salas[nombre].tipo === TIPO_DISCOTECA)
   .sort((a, b) => a.localeCompare(b, 'es'))
+// Solo las de la Comunidad de Madrid: las de otras comunidades se ven en la gira de cada artista
 export const NOMBRES_SALAS = Object.keys(salas)
-  .filter((nombre) => salas[nombre].tipo === TIPO_SALA)
+  .filter((nombre) => salas[nombre].tipo === TIPO_SALA && ubicacionDe(nombre).comunidad === COMUNIDAD_MADRID)
   .sort((a, b) => a.localeCompare(b, 'es'))
