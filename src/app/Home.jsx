@@ -67,6 +67,8 @@ function Home({
   onElegir,
   onVerLocal,
   onVerArtista,
+  noLeidos = 0,
+  onVerAvisos,
 }) {
   // ¿Toca en el evento alguna artista que sigues?
   const tocaFavorita = (evento) => artistasDe(evento).some((artista) => artistasFavoritos.includes(artista.id))
@@ -83,11 +85,27 @@ function Home({
 
   return (
     <div className="flex flex-col gap-7 px-5 pb-8 pt-8">
-      <header>
-        <h1 className="text-3xl font-extrabold text-texto">
-          Akkorde<span className="text-acento">-on</span>
-        </h1>
-        <p className="mt-1 text-suave">{inicio.eslogan}</p>
+      <header className="flex items-start gap-3">
+        <div className="flex-1">
+          <h1 className="text-3xl font-extrabold text-texto">
+            Akkorde<span className="text-acento">-on</span>
+          </h1>
+          <p className="mt-1 text-suave">{inicio.eslogan}</p>
+        </div>
+        {/* Campana de «Avísame si viene»: el número son los avisos sin ver */}
+        <button
+          type="button"
+          onClick={onVerAvisos}
+          aria-label={noLeidos > 0 ? `Avisos, ${noLeidos} sin ver` : 'Avisos'}
+          className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-superficie text-lg hover:bg-borde"
+        >
+          🔔
+          {noLeidos > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-acento px-1 text-xs font-bold text-fondo">
+              {noLeidos}
+            </span>
+          )}
+        </button>
       </header>
 
       <p className="rounded-2xl bg-acento/15 px-4 py-3 text-sm text-texto">

@@ -8,6 +8,10 @@ import MyTickets from './MyTickets.jsx'
 import TicketCarrusel from './TicketCarrusel.jsx'
 import VenueDetail from './VenueDetail.jsx'
 import ArtistDetail from './ArtistDetail.jsx'
+import AvisoArtista from './AvisoArtista.jsx'
+import Avisos from './Avisos.jsx'
+import { debeAvisar } from './avisos.js'
+import { crearAnuncioDemo } from '../demo/anunciosDemo.js' // DEMO:
 import Amigos from './Amigos.jsx'
 import { AMIGOS_INICIALES, SOLICITUDES_INICIALES, asistencia, usuarioPorId } from '../data/amigos.js'
 import { eventos } from '../data/eventos.js'
@@ -114,6 +118,43 @@ function AppView({ onAbrirAvisame }) {
     setArtistasFavoritos((lista) => (lista.includes(id) ? lista.filter((otro) => otro !== id) : [...lista, id]))
   }
 
+  // ---------- «Avísame si viene» (ver avisos.js) ----------
+  // Aviso de cada artista { [id]: { alcance, km, comunidad } } y bandeja de avisos recibidos
+  const [alertas, setAlertas] = useState({})
+  const [avisos, setAvisos] = useState([])
+  // DEMO: conciertos que se han «anunciado» con el botón de simular (con backend vendrían del servidor)
+  const [anunciados, setAnunciados] = useState([])
+  const noLeidos = avisos.filter((aviso) => !aviso.leido).length
+
+  // Activa, cambia o quita (aviso = null) el aviso de una artista
+  function cambiarAlerta(id, aviso) {
+    setAlertas((actuales) => {
+      const copia = { ...actuales }
+      if (aviso) copia[id] = aviso
+      else delete copia[id]
+      return copia
+    })
+  }
+
+  // DEMO: la artista anuncia un concierto; si cumple su aviso, llega a la bandeja.
+  // Devuelve { concierto, avisa, motivo } para que la ficha enseñe qué ha pasado
+  function anunciarConcierto(artista) {
+    const yaAnunciados = anunciados.filter((concierto) => concierto.nombre === artista.nombre).length
+    const concierto = crearAnuncioDemo(artista, yaAnunciados)
+    setAnunciados((lista) => [...lista, concierto])
+    const resultado = debeAvisar(alertas[artista.id], concierto, ubicacion)
+    if (resultado.avisa) {
+      setAvisos((lista) => [{ id: concierto.id, concierto, motivo: resultado.motivo, leido: false }, ...lista])
+    }
+    return { concierto, ...resultado }
+  }
+
+  // Abre la bandeja y da todos los avisos por vistos
+  function verAvisos() {
+    setAvisos((lista) => lista.map((aviso) => ({ ...aviso, leido: true })))
+    setPantalla('avisos')
+  }
+
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
     setVistos((lista) => (lista.includes(concierto.id) ? lista : [...lista, concierto.id]))
@@ -205,7 +246,12 @@ function AppView({ onAbrirAvisame }) {
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
             onVerArtista={verArtista}
+            noLeidos={noLeidos}
+            onVerAvisos={verAvisos}
           />
+        )}
+        {pantalla === 'avisos' && (
+          <Avisos avisos={avisos} onElegir={elegirConcierto} onVolver={() => setPantalla('inicio')} />
         )}
         {pantalla === 'buscar' && (
           <Search
@@ -239,9 +285,20 @@ function AppView({ onAbrirAvisame }) {
             ubicacion={ubicacion}
             esFavorita={artistasFavoritos.includes(artistaElegido.id)}
             onCambiarFavorita={() => cambiarArtistaFavorito(artistaElegido.id)}
+            extra={anunciados}
             onElegir={elegirConcierto}
             onVolver={() => setPantalla(origenArtista)}
-          />
+          >
+            <AvisoArtista
+              key={artistaElegido.id}
+              artista={artistaElegido}
+              aviso={alertas[artistaElegido.id] ?? null}
+              ubicacion={ubicacion}
+              extra={anunciados}
+              onCambiar={(aviso) => cambiarAlerta(artistaElegido.id, aviso)}
+              onSimular={() => anunciarConcierto(artistaElegido)}
+            />
+          </ArtistDetail>
         )}
         {pantalla === 'local' && (
           <VenueDetail
