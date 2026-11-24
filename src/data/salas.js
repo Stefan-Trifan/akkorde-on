@@ -175,6 +175,14 @@ export const salas = {
   },
 }
 
+// Icono y etiqueta corta según el tipo de local
+export function iconoLocal(nombre) {
+  return salas[nombre]?.tipo === TIPO_DISCOTECA ? '🪩' : '🎤'
+}
+export function etiquetaTipo(nombre) {
+  return salas[nombre]?.tipo === TIPO_DISCOTECA ? 'Discoteca' : 'Sala'
+}
+
 // Nombres de los locales, discotecas primero y luego salas, por orden alfabético
 export const NOMBRES_DISCOTECAS = Object.keys(salas)
   .filter((nombre) => salas[nombre].tipo === TIPO_DISCOTECA)

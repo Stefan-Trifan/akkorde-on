@@ -1,69 +1,110 @@
 import { cartelDe, eventos, infoAcceso } from '../data/eventos.js'
-import { TIPO_DISCOTECA, salas } from '../data/salas.js'
+import { iconoLocal, salas } from '../data/salas.js'
 import { distanciaAConcierto, formatearDistancia } from './distancia.js'
-import { formatearFecha, formatearPrecio, precioFinal, textoDressCode, textoEdad } from './formato.js'
-import { esProximo } from './tiempo.js'
+import { formatearPrecio, precioFinal, textoDressCode, textoEdad } from './formato.js'
+import { esProximo, etiquetaFecha } from './tiempo.js'
 
-// Pantalla: ficha de una sala o discoteca con sus próximos eventos
+// Día y mes por separado para la columna de fecha de la agenda: "28" y "NOV"
+function partesFecha(fecha) {
+  const dia = new Date(`${fecha}T00:00`)
+  return {
+    numero: dia.getDate(),
+    mes: dia.toLocaleDateString('es-ES', { month: 'short' }).replace('.', ''),
+  }
+}
+
+// Pantalla: ficha de una sala o discoteca con su agenda de próximos eventos
 function VenueDetail({ nombre, ubicacion, onElegir, onVolver }) {
   const local = salas[nombre]
   const proximos = eventos.filter((evento) => evento.sala === nombre && esProximo(evento))
   const distancia = distanciaAConcierto({ sala: nombre }, ubicacion)
+  // Imagen de cabecera: la del primer evento del local, si tiene alguno
+  const portada = eventos.find((evento) => evento.sala === nombre)?.imagen
 
   return (
-    <div className="flex flex-col gap-5 p-5">
-      <button type="button" onClick={onVolver} className="self-start pt-2 text-suave hover:text-texto">
-        ← Volver
-      </button>
+    <div className="flex flex-col">
+      <div className="relative h-44 overflow-hidden bg-superficie">
+        {portada && <img src={portada} alt="" className="h-full w-full scale-125 object-cover opacity-50 blur-md" />}
+        <div className="absolute inset-0 bg-gradient-to-t from-fondo via-fondo/40 to-transparent" />
+        <button
+          type="button"
+          onClick={onVolver}
+          aria-label="Volver"
+          className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-fondo/70 text-texto backdrop-blur hover:bg-fondo"
+        >
+          ←
+        </button>
+        <div className="absolute inset-x-5 bottom-3">
+          <span className="text-xs font-bold uppercase tracking-widest text-acento">
+            {iconoLocal(nombre)} {local.tipo}
+          </span>
+          <h1 className="text-3xl font-extrabold text-texto">{nombre}</h1>
+        </div>
+      </div>
 
-      <header className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-acento">
-          {local.tipo === TIPO_DISCOTECA ? '🪩' : '🎤'} {local.tipo}
-        </span>
-        <h1 className="text-2xl font-extrabold text-texto">{nombre}</h1>
+      <div className="flex flex-col gap-5 px-5 pb-8 pt-3">
         <p className="text-sm text-suave">
           📍 {local.direccion}
           {distancia !== null && ` · a ${formatearDistancia(distancia)} de ${ubicacion.nombre}`}
         </p>
-      </header>
 
-      <p className="text-texto">{local.descripcion}</p>
+        <p className="text-texto">{local.descripcion}</p>
 
-      <ul className="flex flex-wrap gap-2 text-sm">
-        <li className="rounded-full border border-borde px-3 py-1 text-suave">🔞 {textoEdad(local.edadMinima)}</li>
-        <li className="rounded-full border border-borde px-3 py-1 text-suave">👔 {textoDressCode(local.dressCode)}</li>
-      </ul>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="rounded-2xl bg-superficie p-3">
+            <p className="text-xs text-suave">Edad mínima</p>
+            <p className="font-semibold text-texto">{textoEdad(local.edadMinima)}</p>
+          </div>
+          <div className="rounded-2xl bg-superficie p-3">
+            <p className="text-xs text-suave">Vestimenta</p>
+            <p className="font-semibold text-texto">{textoDressCode(local.dressCode)}</p>
+          </div>
+        </div>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-bold text-texto">Próximos eventos ({proximos.length})</h2>
-        {proximos.length === 0 && (
-          <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
-            {nombre} no tiene eventos próximos en Akkorde-on.
-          </p>
-        )}
-        {proximos.map((evento) => {
-          const acceso = infoAcceso(evento)
-          return (
-            <button
-              key={evento.id}
-              type="button"
-              onClick={() => onElegir(evento)}
-              className="flex flex-col gap-1 rounded-2xl border border-borde bg-superficie p-4 text-left transition hover:border-acento"
-            >
-              <span className="text-xs font-semibold uppercase tracking-wide text-acento">
-                {formatearFecha(evento.fecha)} · {evento.hora} · {evento.genero}
-              </span>
-              <span className="font-bold text-texto">{evento.nombre}</span>
-              {evento.descripcion && <span className="text-sm text-suave">{evento.descripcion}</span>}
-              <span className="text-sm text-suave">🎧 Cartel: {cartelDe(evento).join(', ')}</span>
-              <span className="text-sm text-suave">
-                🔞 {textoEdad(acceso.edadMinima)} · 👔 {textoDressCode(acceso.dressCode)}
-              </span>
-              <span className="text-sm font-semibold text-texto">{formatearPrecio(precioFinal(evento.precio))}</span>
-            </button>
-          )
-        })}
-      </section>
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-suave">
+            Agenda · {proximos.length} {proximos.length === 1 ? 'evento' : 'eventos'}
+          </h2>
+          {proximos.length === 0 && (
+            <p className="rounded-2xl border border-dashed border-borde p-6 text-center text-sm text-suave">
+              {nombre} no tiene eventos próximos en Akkorde-on.
+            </p>
+          )}
+          {proximos.map((evento) => {
+            const acceso = infoAcceso(evento)
+            const { numero, mes } = partesFecha(evento.fecha)
+            // Solo se repite edad o vestimenta si el evento pide algo distinto al local
+            const cambiaAcceso = acceso.edadMinima !== local.edadMinima || acceso.dressCode !== local.dressCode
+            return (
+              <button
+                key={evento.id}
+                type="button"
+                onClick={() => onElegir(evento)}
+                className="group flex gap-4 rounded-2xl border border-borde bg-superficie p-4 text-left transition hover:border-acento"
+              >
+                <div className="flex w-12 shrink-0 flex-col items-center self-start rounded-xl bg-fondo py-2">
+                  <span className="text-xl font-extrabold leading-none text-acento">{numero}</span>
+                  <span className="text-xs uppercase text-suave">{mes}</span>
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <span className="text-xs font-semibold uppercase text-suave">
+                    {etiquetaFecha(evento.fecha)} · {evento.hora} · {evento.genero}
+                  </span>
+                  <span className="font-bold text-texto group-hover:text-acento">{evento.nombre}</span>
+                  {evento.descripcion && <span className="text-sm text-suave">{evento.descripcion}</span>}
+                  <span className="text-sm text-suave">🎧 {cartelDe(evento).join(' · ')}</span>
+                  {cambiaAcceso && (
+                    <span className="text-xs text-crema">
+                      Este día: {textoEdad(acceso.edadMinima)} · {textoDressCode(acceso.dressCode)}
+                    </span>
+                  )}
+                  <span className="mt-1 font-bold text-texto">{formatearPrecio(precioFinal(evento.precio))}</span>
+                </div>
+              </button>
+            )
+          })}
+        </section>
+      </div>
     </div>
   )
 }

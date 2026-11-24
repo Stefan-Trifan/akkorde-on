@@ -1,10 +1,10 @@
 import { eventos } from '../data/eventos.js'
-import { NOMBRES_DISCOTECAS, NOMBRES_SALAS } from '../data/salas.js'
+import BuscadorLocal from './BuscadorLocal.jsx'
 import ConcertCard from './ConcertCard.jsx'
 import UbicacionSelector from './UbicacionSelector.jsx'
 import { TODOS } from './formato.js'
-import { DISTANCIA_MAX_KM, DISTANCIA_MIN_KM, PASO_KM, estaDentroDelRadio, formatearDistancia } from './distancia.js'
-import { esEsteFinde, esHoy } from './tiempo.js'
+import { DISTANCIA_MAX_KM, estaDentroDelRadio } from './distancia.js'
+import { esEsteFinde, esHoy, esProximo } from './tiempo.js'
 
 // ---------- Constantes ----------
 // Lista de géneros sin repetir, sacada de los eventos
@@ -19,23 +19,12 @@ function cumpleFecha(evento, cuando) {
   return true
 }
 
-// Botón redondo de filtro (género o fecha)
-function Chip({ activo, onClick, children }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={activo}
-      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-        activo ? 'border-acento bg-acento text-fondo' : 'border-borde text-suave hover:text-texto'
-      }`}
-    >
-      {children}
-    </button>
-  )
+// Título pequeño de cada bloque de filtros
+function Etiqueta({ children }) {
+  return <h2 className="text-xs font-bold uppercase tracking-widest text-suave">{children}</h2>
 }
 
-// Pantalla 2: buscar eventos filtrando por local, fecha, tipo de música y distancia
+// Pantalla 2: buscar eventos por local, fecha, distancia y estilo
 function Search({
   genero,
   onCambiarGenero,
@@ -47,103 +36,94 @@ function Search({
   onCambiarLocal,
   cuando,
   onCambiarCuando,
+  onLimpiar,
   onElegir,
   onVerLocal,
 }) {
   const resultados = eventos.filter(
     (evento) =>
+      esProximo(evento) &&
       (local === TODOS || evento.sala === local) &&
       cumpleFecha(evento, cuando) &&
       (genero === TODOS || evento.genero === genero) &&
       estaDentroDelRadio(evento, radio, ubicacion),
   )
+  const hayFiltros = local !== TODOS || cuando !== 'todas' || genero !== TODOS || radio !== DISTANCIA_MAX_KM
 
   return (
-    <div className="flex flex-col gap-5 p-5">
-      <h1 className="pt-4 text-2xl font-extrabold text-texto">¿Qué plan te apetece?</h1>
+    <div className="flex flex-col gap-6 px-5 pb-8 pt-8">
+      <header className="flex flex-col gap-3">
+        <h1 className="text-2xl font-extrabold text-texto">¿Qué plan te apetece?</h1>
+        <BuscadorLocal local={local} onCambiarLocal={onCambiarLocal} onVerLocal={onVerLocal} />
+      </header>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="local" className="text-sm text-suave">
-          Sala o discoteca
-        </label>
-        <select
-          id="local"
-          value={local}
-          onChange={(evento) => onCambiarLocal(evento.target.value)}
-          className="rounded-2xl border border-borde bg-superficie px-3 py-2 text-texto"
-        >
-          <option value={TODOS}>Todos los locales</option>
-          <optgroup label="Discotecas">
-            {NOMBRES_DISCOTECAS.map((nombre) => (
-              <option key={nombre} value={nombre}>
-                {nombre}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Salas de conciertos">
-            {NOMBRES_SALAS.map((nombre) => (
-              <option key={nombre} value={nombre}>
-                {nombre}
-              </option>
-            ))}
-          </optgroup>
-        </select>
-        {local !== TODOS && (
-          <button
-            type="button"
-            onClick={() => onVerLocal(local)}
-            className="self-start text-sm font-semibold text-acento hover:underline"
-          >
-            Ver ficha y todos los eventos de {local} →
-          </button>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {Object.entries(CUANDO).map(([clave, texto]) => (
-          <Chip key={clave} activo={cuando === clave} onClick={() => onCambiarCuando(clave)}>
-            {texto}
-          </Chip>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {GENEROS.map((opcion) => (
-          <Chip key={opcion} activo={genero === opcion} onClick={() => onCambiarGenero(opcion)}>
-            {opcion}
-          </Chip>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-2 rounded-2xl border border-borde bg-superficie p-4">
-        <UbicacionSelector ubicacion={ubicacion} onCambiarUbicacion={onCambiarUbicacion} />
-        <label htmlFor="distancia" className="flex justify-between pt-2 text-sm text-suave">
-          <span>Distancia desde {ubicacion.nombre}</span>
-          <span className="shrink-0 whitespace-nowrap pl-2 font-bold text-acento">Hasta {formatearDistancia(radio)}</span>
-        </label>
-        <input
-          id="distancia"
-          type="range"
-          min={DISTANCIA_MIN_KM}
-          max={DISTANCIA_MAX_KM}
-          step={PASO_KM}
-          value={radio}
-          onChange={(evento) => onCambiarRadio(Number(evento.target.value))}
-          className="w-full accent-acento"
-        />
-        <div className="flex justify-between text-xs text-suave">
-          <span>{formatearDistancia(DISTANCIA_MIN_KM)}</span>
-          <span>{formatearDistancia(DISTANCIA_MAX_KM)}</span>
+      <section className="flex flex-col gap-2">
+        <Etiqueta>Cuándo</Etiqueta>
+        <div className="grid grid-cols-3 rounded-full border border-borde bg-superficie p-1" role="group">
+          {Object.entries(CUANDO).map(([clave, texto]) => (
+            <button
+              key={clave}
+              type="button"
+              onClick={() => onCambiarCuando(clave)}
+              aria-pressed={cuando === clave}
+              className={`rounded-full py-2 text-sm font-semibold transition ${
+                cuando === clave ? 'bg-acento text-fondo' : 'text-suave hover:text-texto'
+              }`}
+            >
+              {texto}
+            </button>
+          ))}
         </div>
-      </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <Etiqueta>Dónde</Etiqueta>
+        <UbicacionSelector
+          ubicacion={ubicacion}
+          onCambiarUbicacion={onCambiarUbicacion}
+          radio={radio}
+          onCambiarRadio={onCambiarRadio}
+        />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <Etiqueta>Estilo</Etiqueta>
+        {/* Una sola fila que se desliza; -mx-5/px-5 para que llegue al borde de la pantalla */}
+        <div className="sin-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
+          {GENEROS.map((opcion) => (
+            <button
+              key={opcion}
+              type="button"
+              onClick={() => onCambiarGenero(opcion)}
+              aria-pressed={genero === opcion}
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                genero === opcion
+                  ? 'border-acento bg-acento text-fondo'
+                  : 'border-borde text-suave hover:border-suave hover:text-texto'
+              }`}
+            >
+              {opcion}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="flex flex-col gap-3">
-        <p className="text-sm text-suave">
-          {resultados.length} {resultados.length === 1 ? 'evento' : 'eventos'}
-        </p>
+        <div className="flex items-baseline justify-between border-t border-borde pt-4">
+          <p className="font-bold text-texto">
+            {resultados.length} {resultados.length === 1 ? 'evento' : 'eventos'}
+          </p>
+          {hayFiltros && (
+            <button type="button" onClick={onLimpiar} className="text-sm font-semibold text-acento hover:underline">
+              Limpiar filtros
+            </button>
+          )}
+        </div>
         {resultados.length === 0 && (
-          <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
-            No hay eventos con estos filtros. Prueba con otro día, más distancia u otro estilo.
+          <p className="rounded-2xl border border-dashed border-borde p-6 text-center text-sm text-suave">
+            No hay eventos con estos filtros.
+            <br />
+            Prueba con otro día, más distancia u otro estilo.
           </p>
         )}
         {resultados.map((evento) => (

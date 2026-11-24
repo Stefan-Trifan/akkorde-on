@@ -50,6 +50,14 @@ function AppView({ onAbrirAvisame }) {
     setPantalla('concierto')
   }
 
+  // Vuelve los filtros de búsqueda a como estaban al abrir la app (la ubicación se mantiene)
+  function limpiarFiltros() {
+    setGenero(TODOS)
+    setRadio(DISTANCIA_MAX_KM)
+    setLocal(TODOS)
+    setCuando('todas')
+  }
+
   // Abre la ficha de una sala o discoteca. Si se abre desde un evento, «Volver» salta
   // a donde se abrió ese evento (así no se crea un bucle evento ↔ local)
   function verLocal(nombre) {
@@ -105,6 +113,7 @@ function AppView({ onAbrirAvisame }) {
             onCambiarLocal={setLocal}
             cuando={cuando}
             onCambiarCuando={setCuando}
+            onLimpiar={limpiarFiltros}
             onElegir={elegirConcierto}
             onVerLocal={verLocal}
           />

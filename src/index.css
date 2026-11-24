@@ -12,6 +12,14 @@
   --color-exito: #def808;
 }
 
+/* Filas que se deslizan en horizontal (chips de género) sin enseñar la barra de scroll */
+.sin-scrollbar {
+  scrollbar-width: none;
+}
+.sin-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Los enlaces del menú bajan suavemente hasta cada sección */
 html {
   scroll-behavior: smooth;

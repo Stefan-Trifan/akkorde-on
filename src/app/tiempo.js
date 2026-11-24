@@ -18,6 +18,13 @@ export function fechaDentroDe(dias, desde = new Date()) {
   return aFechaTexto(momento)
 }
 
+// Fecha para las tarjetas: "Hoy", "Mañana" o "sáb, 28 nov"
+export function etiquetaFecha(fecha, ahora = new Date()) {
+  if (fecha === aFechaTexto(ahora)) return 'Hoy'
+  if (fecha === fechaDentroDe(1, ahora)) return 'Mañana'
+  return new Date(`${fecha}T00:00`).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
+}
+
 // ¿Es el evento hoy?
 export function esHoy(evento, ahora = new Date()) {
   return evento.fecha === aFechaTexto(ahora)
