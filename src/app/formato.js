@@ -24,6 +24,16 @@ export function formatearFecha(fecha) {
   return dia.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
+// Edad mínima para mostrar: 18 → "+18 años"; null → sin requisito
+export function textoEdad(edad) {
+  return edad ? `+${edad} años` : 'Todas las edades'
+}
+
+// Código de vestimenta para mostrar; null → sin requisito
+export function textoDressCode(dressCode) {
+  return dressCode ?? 'Sin código de vestimenta'
+}
+
 // Código de la entrada para el QR (simulado): "AKK-crater-482913"
 export function crearCodigoEntrada(concierto) {
   const numero = Math.floor(100000 + Math.random() * 900000)

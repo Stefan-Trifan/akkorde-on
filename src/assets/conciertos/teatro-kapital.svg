@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb300"/><stop offset="1" stop-color="#3a0a0a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <g fill="#000" opacity="0.35">
+    <rect x="560" y="60" width="180" height="40"/><rect x="560" y="120" width="180" height="40"/><rect x="560" y="180" width="180" height="40"/>
+    <rect x="560" y="240" width="180" height="40"/><rect x="560" y="300" width="180" height="40"/><rect x="560" y="360" width="180" height="40"/><rect x="560" y="420" width="180" height="40"/>
+  </g>
+  <text x="48" y="80" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="4" fill="#fff" opacity="0.9">DISCOTECA</text>
+  <text x="48" y="190" font-family="Helvetica, Arial, sans-serif" font-size="64" font-weight="800" fill="#fff">Teatro Kapital</text>
+  <text x="48" y="240" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#fff" opacity="0.85">ATOCHA · MADRID</text>
+</svg>

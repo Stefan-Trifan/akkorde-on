@@ -5,6 +5,7 @@ import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
 import MyTickets from './MyTickets.jsx'
 import Ticket from './Ticket.jsx'
+import VenueDetail from './VenueDetail.jsx'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
 
@@ -30,6 +31,12 @@ function AppView({ onAbrirAvisame }) {
   const [genero, setGenero] = useState(TODOS)
   // Filtro por distancia en km (empieza al máximo: se ven todos)
   const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
+  // Filtro por sala o discoteca y por fecha ('todas', 'hoy' o 'finde')
+  const [local, setLocal] = useState(TODOS)
+  const [cuando, setCuando] = useState('todas')
+  // Ficha de local abierta y pantalla a la que vuelve
+  const [localElegido, setLocalElegido] = useState(null)
+  const [origenLocal, setOrigenLocal] = useState('buscar')
 
   const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
 
@@ -38,6 +45,16 @@ function AppView({ onAbrirAvisame }) {
     setConciertoElegido(concierto)
     setOrigen(pantalla)
     setPantalla('concierto')
+  }
+
+  // Abre la ficha de una sala o discoteca. Si se abre desde un evento, «Volver» salta
+  // a donde se abrió ese evento (así no se crea un bucle evento ↔ local)
+  function verLocal(nombre) {
+    setLocalElegido(nombre)
+    const desde = pantalla === 'concierto' ? origen : pantalla
+    // Si el evento se abrió desde una ficha de local, se mantiene el origen que ya había
+    if (desde !== 'local') setOrigenLocal(desde)
+    setPantalla('local')
   }
 
   // Añade una entrada nueva a la lista y la deja abierta para verla
@@ -79,14 +96,23 @@ function AppView({ onAbrirAvisame }) {
             onCambiarGenero={setGenero}
             radio={radio}
             onCambiarRadio={setRadio}
+            local={local}
+            onCambiarLocal={setLocal}
+            cuando={cuando}
+            onCambiarCuando={setCuando}
             onElegir={elegirConcierto}
+            onVerLocal={verLocal}
           />
+        )}
+        {pantalla === 'local' && (
+          <VenueDetail nombre={localElegido} onElegir={elegirConcierto} onVolver={() => setPantalla(origenLocal)} />
         )}
         {pantalla === 'concierto' && (
           <EventDetail
             concierto={conciertoElegido}
             onComprar={() => setPantalla('compra')}
             onVolver={() => setPantalla(origen)}
+            onVerLocal={verLocal}
           />
         )}
         {pantalla === 'compra' && (

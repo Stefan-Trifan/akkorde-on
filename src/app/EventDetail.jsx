@@ -1,8 +1,17 @@
-import { GASTOS_GESTION, formatearFecha, formatearPrecio, precioFinal } from './formato.js'
+import { cartelDe, infoAcceso } from '../data/eventos.js'
+import {
+  GASTOS_GESTION,
+  formatearFecha,
+  formatearPrecio,
+  precioFinal,
+  textoDressCode,
+  textoEdad,
+} from './formato.js'
 
 // Pantalla 3: ficha del concierto con el precio final ya calculado
-function EventDetail({ concierto, onComprar, onVolver }) {
+function EventDetail({ concierto, onComprar, onVolver, onVerLocal }) {
   const total = precioFinal(concierto.precio)
+  const acceso = infoAcceso(concierto)
 
   return (
     <div className="flex flex-col">
@@ -24,11 +33,26 @@ function EventDetail({ concierto, onComprar, onVolver }) {
           <h1 className="text-2xl font-extrabold text-texto">{concierto.nombre}</h1>
         </div>
 
+        {concierto.descripcion && <p className="text-texto">{concierto.descripcion}</p>}
+
         <ul className="flex flex-col gap-1 text-suave">
-          <li>📍 {concierto.sala}, Madrid</li>
+          <li>
+            📍{' '}
+            <button
+              type="button"
+              onClick={() => onVerLocal(concierto.sala)}
+              className="font-semibold text-acento hover:underline"
+            >
+              {concierto.sala}
+            </button>
+            , Madrid
+          </li>
           <li>
             📅 {formatearFecha(concierto.fecha)} · {concierto.hora}
           </li>
+          <li>🎧 Cartel: {cartelDe(concierto).join(', ')}</li>
+          <li>🔞 {textoEdad(acceso.edadMinima)}</li>
+          <li>👔 {textoDressCode(acceso.dressCode)}</li>
         </ul>
 
         <div className="rounded-2xl border border-borde bg-superficie p-4 text-sm">
