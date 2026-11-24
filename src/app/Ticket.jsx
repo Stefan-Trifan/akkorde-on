@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { QRCodeSVG } from 'qrcode.react'
+import QrRedondeado from '../components/QrRedondeado.jsx'
 import Avatar from '../components/Avatar.jsx'
 import { nombreCompleto } from '../data/amigos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio, precioFinal } from './formato.js'
@@ -102,18 +102,18 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
           </div>
 
           <div className="relative">
-            <div className={`transition duration-500 ${mostrarQr ? '' : 'blur-md'}`} aria-hidden={!mostrarQr}>
-              <QRCodeSVG value={codigo} size={176} />
+            <div aria-hidden={!mostrarQr}>
+              <QrRedondeado valor={codigo} tamano={184} difuminado={!mostrarQr} etiqueta={`QR de la entrada ${codigo}`} />
             </div>
             {enviadaA ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-fondo/90 p-3 text-center text-acento">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-[1.75rem] bg-fondo/90 p-3 text-center text-acento">
                 <span className="text-2xl" aria-hidden="true">
                   📤
                 </span>
                 <p className="text-sm font-bold">Enviada a {enviadaA}</p>
               </div>
             ) : enReventa ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-fondo/90 p-3 text-center text-acento">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-[1.75rem] bg-fondo/90 p-3 text-center text-acento">
                 <span className="text-2xl" aria-hidden="true">
                   🔄
                 </span>
@@ -121,8 +121,10 @@ function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar })
               </div>
             ) : (
               !mostrarQr && (
-                <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-bold">
-                  {sePuedeVer ? 'Pulsa «Ver QR» abajo' : `Se verá ${HORAS_ANTES_QR} h antes`}
+                <p className="absolute inset-0 flex items-center justify-center px-4 text-center">
+                  <span className="rounded-full bg-fondo px-3 py-1.5 text-xs font-bold text-acento shadow">
+                    🔒 {sePuedeVer ? 'Pulsa «Ver QR» abajo' : `Se verá ${HORAS_ANTES_QR} h antes`}
+                  </span>
                 </p>
               )
             )}

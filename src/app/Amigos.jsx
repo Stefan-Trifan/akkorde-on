@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { QRCodeSVG } from 'qrcode.react'
+import QrRedondeado from '../components/QrRedondeado.jsx'
 import Avatar from '../components/Avatar.jsx'
 import { MI_PERFIL, buscarUsuarios, nombreCompleto, usuarioPorId } from '../data/amigos.js'
 
@@ -110,9 +110,9 @@ function Amigos({ amigos, recibidas, enviadas, planesDe, onEnviarSolicitud, onAc
           </p>
         )}
         {verQr && (
-          <div className="flex flex-col items-center gap-2 rounded-2xl bg-crema p-4 text-fondo">
-            <QRCodeSVG value={ENLACE_PERFIL} size={160} />
-            <p className="text-center text-xs">Que tu amigo lo escanee con Akkorde-on para agregarte</p>
+          <div className="flex flex-col items-center gap-3 py-2">
+            <QrRedondeado valor={ENLACE_PERFIL} tamano={170} etiqueta={`QR para agregar a @${MI_PERFIL.id}`} />
+            <p className="text-center text-xs text-suave">Que tu amigo lo escanee con Akkorde-on para agregarte</p>
           </div>
         )}
       </section>
