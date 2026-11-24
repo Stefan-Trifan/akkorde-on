@@ -7,9 +7,6 @@
 export const TIPO_SALA = 'Sala de conciertos'
 export const TIPO_DISCOTECA = 'Discoteca'
 
-// Ubicación fija de la demo (en la app real saldría del móvil del usuario)
-export const UBICACION_EJEMPLO = { nombre: 'Sol', lat: 40.4169, lng: -3.7035 }
-
 export const salas = {
   // ----- Discotecas -----
   'Fitz Club': {

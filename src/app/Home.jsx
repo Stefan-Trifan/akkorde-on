@@ -6,7 +6,7 @@ import ConcertCard from './ConcertCard.jsx'
 const NUM_DESTACADOS = 3
 
 // Pantalla 1: logo, eslogan y conciertos destacados (los más próximos)
-function Home({ onElegir }) {
+function Home({ ubicacion, onElegir }) {
   const destacados = eventos.slice(0, NUM_DESTACADOS)
 
   return (
@@ -25,7 +25,7 @@ function Home({ onElegir }) {
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-bold text-texto">Próximos conciertos</h2>
         {destacados.map((concierto) => (
-          <ConcertCard key={concierto.id} concierto={concierto} onElegir={onElegir} />
+          <ConcertCard key={concierto.id} concierto={concierto} ubicacion={ubicacion} onElegir={onElegir} />
         ))}
       </section>
     </div>

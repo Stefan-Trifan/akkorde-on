@@ -1,4 +1,4 @@
-import { UBICACION_EJEMPLO, salas } from '../data/salas.js'
+import { salas } from '../data/salas.js'
 
 // ---------- Constantes ----------
 const RADIO_TIERRA_KM = 6371
@@ -20,16 +20,16 @@ function distanciaKm(a, b) {
   return 2 * RADIO_TIERRA_KM * Math.asin(Math.sqrt(h))
 }
 
-// Distancia desde la ubicación de ejemplo hasta la sala del concierto (null si no hay coordenadas)
-export function distanciaAConcierto(concierto) {
+// Distancia desde la ubicación elegida ({ lat, lng }) hasta la sala del concierto (null si no hay coordenadas)
+export function distanciaAConcierto(concierto, ubicacion) {
   const sala = salas[concierto.sala]
   if (!sala) return null
-  return distanciaKm(UBICACION_EJEMPLO, sala)
+  return distanciaKm(ubicacion, sala)
 }
 
-// ¿Está el concierto dentro del radio elegido?
-export function estaDentroDelRadio(concierto, km) {
-  const distancia = distanciaAConcierto(concierto)
+// ¿Está el concierto dentro del radio elegido, contando desde la ubicación elegida?
+export function estaDentroDelRadio(concierto, km, ubicacion) {
+  const distancia = distanciaAConcierto(concierto, ubicacion)
   return distancia !== null && distancia <= km
 }
 

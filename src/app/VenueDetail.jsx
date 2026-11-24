@@ -5,10 +5,10 @@ import { formatearFecha, formatearPrecio, precioFinal, textoDressCode, textoEdad
 import { esProximo } from './tiempo.js'
 
 // Pantalla: ficha de una sala o discoteca con sus próximos eventos
-function VenueDetail({ nombre, onElegir, onVolver }) {
+function VenueDetail({ nombre, ubicacion, onElegir, onVolver }) {
   const local = salas[nombre]
   const proximos = eventos.filter((evento) => evento.sala === nombre && esProximo(evento))
-  const distancia = distanciaAConcierto({ sala: nombre })
+  const distancia = distanciaAConcierto({ sala: nombre }, ubicacion)
 
   return (
     <div className="flex flex-col gap-5 p-5">
@@ -23,7 +23,7 @@ function VenueDetail({ nombre, onElegir, onVolver }) {
         <h1 className="text-2xl font-extrabold text-texto">{nombre}</h1>
         <p className="text-sm text-suave">
           📍 {local.direccion}
-          {distancia !== null && ` · ${formatearDistancia(distancia)}`}
+          {distancia !== null && ` · a ${formatearDistancia(distancia)} de ${ubicacion.nombre}`}
         </p>
       </header>
 

@@ -6,6 +6,7 @@ import Checkout from './Checkout.jsx'
 import MyTickets from './MyTickets.jsx'
 import Ticket from './Ticket.jsx'
 import VenueDetail from './VenueDetail.jsx'
+import { UBICACION_INICIAL } from '../data/zonas.js'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
 
@@ -31,6 +32,8 @@ function AppView({ onAbrirAvisame }) {
   const [genero, setGenero] = useState(TODOS)
   // Filtro por distancia en km (empieza al máximo: se ven todos)
   const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
+  // Punto desde el que se miden las distancias ({ nombre, lat, lng }): una zona o el GPS
+  const [ubicacion, setUbicacion] = useState(UBICACION_INICIAL)
   // Filtro por sala o discoteca y por fecha ('todas', 'hoy' o 'finde')
   const [local, setLocal] = useState(TODOS)
   const [cuando, setCuando] = useState('todas')
@@ -89,13 +92,15 @@ function AppView({ onAbrirAvisame }) {
   return (
     <div className="flex h-full flex-col bg-fondo text-texto">
       <main className="flex-1 overflow-y-auto">
-        {pantalla === 'inicio' && <Home onElegir={elegirConcierto} />}
+        {pantalla === 'inicio' && <Home ubicacion={ubicacion} onElegir={elegirConcierto} />}
         {pantalla === 'buscar' && (
           <Search
             genero={genero}
             onCambiarGenero={setGenero}
             radio={radio}
             onCambiarRadio={setRadio}
+            ubicacion={ubicacion}
+            onCambiarUbicacion={setUbicacion}
             local={local}
             onCambiarLocal={setLocal}
             cuando={cuando}
@@ -105,7 +110,12 @@ function AppView({ onAbrirAvisame }) {
           />
         )}
         {pantalla === 'local' && (
-          <VenueDetail nombre={localElegido} onElegir={elegirConcierto} onVolver={() => setPantalla(origenLocal)} />
+          <VenueDetail
+            nombre={localElegido}
+            ubicacion={ubicacion}
+            onElegir={elegirConcierto}
+            onVolver={() => setPantalla(origenLocal)}
+          />
         )}
         {pantalla === 'concierto' && (
           <EventDetail

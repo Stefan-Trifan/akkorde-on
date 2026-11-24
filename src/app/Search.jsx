@@ -1,6 +1,7 @@
 import { eventos } from '../data/eventos.js'
-import { NOMBRES_DISCOTECAS, NOMBRES_SALAS, UBICACION_EJEMPLO } from '../data/salas.js'
+import { NOMBRES_DISCOTECAS, NOMBRES_SALAS } from '../data/salas.js'
 import ConcertCard from './ConcertCard.jsx'
+import UbicacionSelector from './UbicacionSelector.jsx'
 import { TODOS } from './formato.js'
 import { DISTANCIA_MAX_KM, DISTANCIA_MIN_KM, PASO_KM, estaDentroDelRadio, formatearDistancia } from './distancia.js'
 import { esEsteFinde, esHoy } from './tiempo.js'
@@ -40,6 +41,8 @@ function Search({
   onCambiarGenero,
   radio,
   onCambiarRadio,
+  ubicacion,
+  onCambiarUbicacion,
   local,
   onCambiarLocal,
   cuando,
@@ -52,7 +55,7 @@ function Search({
       (local === TODOS || evento.sala === local) &&
       cumpleFecha(evento, cuando) &&
       (genero === TODOS || evento.genero === genero) &&
-      estaDentroDelRadio(evento, radio),
+      estaDentroDelRadio(evento, radio, ubicacion),
   )
 
   return (
@@ -113,8 +116,9 @@ function Search({
       </div>
 
       <div className="flex flex-col gap-2 rounded-2xl border border-borde bg-superficie p-4">
-        <label htmlFor="distancia" className="flex justify-between text-sm text-suave">
-          <span>📍 Cerca de {UBICACION_EJEMPLO.nombre} (ubicación de ejemplo)</span>
+        <UbicacionSelector ubicacion={ubicacion} onCambiarUbicacion={onCambiarUbicacion} />
+        <label htmlFor="distancia" className="flex justify-between pt-2 text-sm text-suave">
+          <span>Distancia desde {ubicacion.nombre}</span>
           <span className="shrink-0 whitespace-nowrap pl-2 font-bold text-acento">Hasta {formatearDistancia(radio)}</span>
         </label>
         <input
@@ -143,7 +147,7 @@ function Search({
           </p>
         )}
         {resultados.map((evento) => (
-          <ConcertCard key={evento.id} concierto={evento} onElegir={onElegir} />
+          <ConcertCard key={evento.id} concierto={evento} ubicacion={ubicacion} onElegir={onElegir} />
         ))}
       </section>
     </div>
