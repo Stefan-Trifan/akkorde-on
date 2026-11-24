@@ -1,7 +1,8 @@
 // Giras de ejemplo: conciertos de artistas de artistas.js en Madrid, en otros pueblos de la
-// Comunidad de Madrid y en otras comunidades. Artistas inventados, salas reales, precios de ejemplo.
+// Comunidad de Madrid y en otras comunidades. Artistas y salas reales; las fechas, salas y precios
+// son de ejemplo (demo): no son conciertos anunciados de verdad.
 // Las fechas se calculan desde hoy (como en discotecas.js) para que siempre haya conciertos próximos.
-// Mismo formato que conciertos.js, más descripción, cartel (artista + telonero) y «venta» (ver app/venta.js).
+// Mismo formato que conciertos.js, más «venta» (ver app/venta.js).
 
 import { fechaDentroDe } from '../app/tiempo.js'
 import { precioEntrada } from '../app/venta.js'
@@ -50,7 +51,7 @@ function ventaTeatro(patio, anfiteatro) {
 }
 
 // Crea un concierto de la gira de una artista: nombre, estilo e imagen salen de su ficha
-function concierto(idArtista, lugar, { sala, dias, hora = '21:00', venta, cartel, descripcion }) {
+function concierto(idArtista, lugar, { sala, dias, hora = '21:00', venta }) {
   const artista = artistaPorId(idArtista)
   // Precio de referencia: la entrada más barata que se vende ahora
   const precio = Math.min(...venta.entradas.map(precioEntrada))
@@ -63,165 +64,40 @@ function concierto(idArtista, lugar, { sala, dias, hora = '21:00', venta, cartel
     genero: artista.genero,
     precio,
     imagen: artista.imagen,
-    descripcion,
-    cartel: cartel ?? [artista.nombre],
     venta,
   }
 }
 
 export const conciertosGira = [
-  // ----- Aurora Vega · gira «Mareas» -----
-  concierto('aurora-vega', 'madrid', {
-    sala: 'Movistar Arena',
-    dias: 18,
-    venta: ventaRecinto(42, 35),
-    cartel: ['Aurora Vega', 'Nilo Sur'],
-    descripcion: 'Gira «Mareas»: la única fecha en Madrid. Abre Nilo Sur.',
-  }),
-  concierto('aurora-vega', 'barcelona', {
-    sala: 'Razzmatazz',
-    dias: 11,
-    venta: ventaSala(30),
-    descripcion: 'Gira «Mareas».',
-  }),
-  concierto('aurora-vega', 'valencia', {
-    sala: 'Palau de la Música de València',
-    dias: 25,
-    venta: ventaTeatro(38, 28),
-    descripcion: 'Gira «Mareas»: concierto en casa.',
-  }),
-  concierto('aurora-vega', 'sevilla', {
-    sala: 'Teatro Lope de Vega',
-    dias: 32,
-    venta: ventaTeatro(34, 26),
-    descripcion: 'Gira «Mareas».',
-  }),
+  // ----- Bad Bunny -----
+  concierto('bad-bunny', 'madrid', { sala: 'Movistar Arena', dias: 18, venta: ventaRecinto(42, 35) }),
+  concierto('bad-bunny', 'barcelona', { sala: 'Razzmatazz', dias: 11, venta: ventaSala(30) }),
+  concierto('bad-bunny', 'valencia', { sala: 'Palau de la Música de València', dias: 25, venta: ventaTeatro(38, 28) }),
+  concierto('bad-bunny', 'sevilla', { sala: 'Teatro Lope de Vega', dias: 32, venta: ventaTeatro(34, 26) }),
 
-  // ----- Los Satélites · gira «Órbita» -----
-  concierto('los-satelites', 'madrid', {
-    sala: 'Sala El Sol',
-    dias: 4,
-    hora: '21:30',
-    venta: ventaSala(16),
-    descripcion: 'Gira «Órbita»: arranque de la gira en Madrid.',
-  }),
-  concierto('los-satelites', 'alcala', {
-    sala: 'Teatro Salón Cervantes',
-    dias: 9,
-    hora: '20:00',
-    venta: ventaTeatro(18, 14),
-    descripcion: 'Gira «Órbita»: vuelven a su ciudad.',
-  }),
-  concierto('los-satelites', 'bilbao', {
-    sala: 'Kafe Antzokia',
-    dias: 16,
-    venta: ventaSala(18),
-    descripcion: 'Gira «Órbita».',
-  }),
-  concierto('los-satelites', 'zaragoza', {
-    sala: 'Auditorio de Zaragoza',
-    dias: 23,
-    venta: ventaTeatro(20, 15),
-    descripcion: 'Gira «Órbita».',
-  }),
+  // ----- Quevedo -----
+  concierto('quevedo', 'madrid', { sala: 'Sala El Sol', dias: 4, hora: '21:30', venta: ventaSala(16) }),
+  concierto('quevedo', 'alcala', { sala: 'Teatro Salón Cervantes', dias: 9, hora: '20:00', venta: ventaTeatro(18, 14) }),
+  concierto('quevedo', 'bilbao', { sala: 'Kafe Antzokia', dias: 16, venta: ventaSala(18) }),
+  concierto('quevedo', 'zaragoza', { sala: 'Auditorio de Zaragoza', dias: 23, venta: ventaTeatro(20, 15) }),
 
-  // ----- Bruma · gira «Niebla» -----
-  concierto('bruma', 'madrid', {
-    sala: 'La Riviera',
-    dias: 12,
-    venta: ventaSala(22),
-    cartel: ['Bruma', 'Las Farolas'],
-    descripcion: 'Gira «Niebla». Teloneros: Las Farolas.',
-  }),
-  concierto('bruma', 'getafe', {
-    sala: 'Teatro Federico García Lorca',
-    dias: 6,
-    hora: '20:30',
-    venta: ventaTeatro(18, 14),
-    descripcion: 'Gira «Niebla».',
-  }),
-  concierto('bruma', 'guadalajara', {
-    sala: 'Teatro Buero Vallejo',
-    dias: 20,
-    hora: '20:30',
-    venta: ventaTeatro(17, 13),
-    descripcion: 'Gira «Niebla».',
-  }),
-  concierto('bruma', 'toledo', {
-    sala: 'Teatro de Rojas',
-    dias: 27,
-    hora: '20:30',
-    venta: ventaTeatro(19, 15),
-    descripcion: 'Gira «Niebla»: fin de gira en su ciudad.',
-  }),
+  // ----- La Pantera -----
+  concierto('la-pantera', 'madrid', { sala: 'La Riviera', dias: 12, venta: ventaSala(22) }),
+  concierto('la-pantera', 'getafe', { sala: 'Teatro Federico García Lorca', dias: 6, hora: '20:30', venta: ventaTeatro(18, 14) }),
+  concierto('la-pantera', 'guadalajara', { sala: 'Teatro Buero Vallejo', dias: 20, hora: '20:30', venta: ventaTeatro(17, 13) }),
+  concierto('la-pantera', 'toledo', { sala: 'Teatro de Rojas', dias: 27, hora: '20:30', venta: ventaTeatro(19, 15) }),
 
-  // ----- Nilo Sur · gira «Delta» -----
-  concierto('nilo-sur', 'madrid', {
-    sala: 'Café Berlín',
-    dias: 2,
-    hora: '21:30',
-    venta: ventaSala(15),
-    descripcion: 'Gira «Delta» en formato íntimo.',
-  }),
-  concierto('nilo-sur', 'mostoles', {
-    sala: 'Teatro del Bosque',
-    dias: 14,
-    hora: '20:00',
-    venta: ventaTeatro(16, 12),
-    descripcion: 'Gira «Delta».',
-  }),
-  concierto('nilo-sur', 'barcelona', {
-    sala: 'Razzmatazz',
-    dias: 30,
-    venta: ventaSala(17),
-    descripcion: 'Gira «Delta».',
-  }),
+  // ----- Lucho RK -----
+  concierto('lucho-rk', 'madrid', { sala: 'Café Berlín', dias: 2, hora: '21:30', venta: ventaSala(15) }),
+  concierto('lucho-rk', 'mostoles', { sala: 'Teatro del Bosque', dias: 14, hora: '20:00', venta: ventaTeatro(16, 12) }),
+  concierto('lucho-rk', 'barcelona', { sala: 'Razzmatazz', dias: 30, venta: ventaSala(17) }),
 
-  // ----- Nuevas fechas de artistas que ya estaban -----
-  concierto('los-kilometros', 'madrid', {
-    sala: 'Siroco',
-    dias: 8,
-    hora: '22:00',
-    venta: ventaSala(14),
-    descripcion: 'Vuelven a Madrid tras llenar la Sala El Sol.',
-  }),
-  concierto('los-kilometros', 'valencia', {
-    sala: 'Palau de la Música de València',
-    dias: 19,
-    venta: ventaTeatro(20, 15),
-    descripcion: 'Primera vez en València.',
-  }),
-  concierto('las-hermanas-brisa', 'alcala', {
-    sala: 'Teatro Salón Cervantes',
-    dias: 21,
-    hora: '20:00',
-    venta: ventaTeatro(22, 17),
-    descripcion: 'Concierto acústico.',
-  }),
-  concierto('las-hermanas-brisa', 'sevilla', {
-    sala: 'Teatro Lope de Vega',
-    dias: 35,
-    venta: ventaTeatro(24, 18),
-    descripcion: 'Concierto acústico.',
-  }),
-  concierto('neon-habanero', 'madrid', {
-    sala: 'La Riviera',
-    dias: 24,
-    venta: ventaSala(26),
-    descripcion: 'Segunda fecha en Madrid: la primera se agotó.',
-  }),
-  concierto('mc-lavapies', 'getafe', {
-    sala: 'Teatro Federico García Lorca',
-    dias: 5,
-    hora: '21:00',
-    venta: ventaTeatro(15, 12),
-    descripcion: 'Rap con banda en directo.',
-  }),
-  concierto('mc-lavapies', 'bilbao', {
-    sala: 'Kafe Antzokia',
-    dias: 17,
-    hora: '21:30',
-    venta: ventaSala(16),
-    descripcion: 'Primera vez en Bilbao.',
-  }),
+  // ----- Más fechas de artistas de conciertos.js y conciertosExtra.js -----
+  concierto('arde-bogota', 'madrid', { sala: 'Siroco', dias: 8, hora: '22:00', venta: ventaSala(14) }),
+  concierto('arde-bogota', 'valencia', { sala: 'Palau de la Música de València', dias: 19, venta: ventaTeatro(20, 15) }),
+  concierto('aitana', 'alcala', { sala: 'Teatro Salón Cervantes', dias: 21, hora: '20:00', venta: ventaTeatro(22, 17) }),
+  concierto('aitana', 'sevilla', { sala: 'Teatro Lope de Vega', dias: 35, venta: ventaTeatro(24, 18) }),
+  concierto('myke-towers', 'madrid', { sala: 'La Riviera', dias: 24, venta: ventaSala(26) }),
+  concierto('natos-y-waor', 'getafe', { sala: 'Teatro Federico García Lorca', dias: 5, venta: ventaTeatro(15, 12) }),
+  concierto('natos-y-waor', 'bilbao', { sala: 'Kafe Antzokia', dias: 17, hora: '21:30', venta: ventaSala(16) }),
 ]

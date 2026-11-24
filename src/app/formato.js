@@ -34,7 +34,7 @@ export function textoDressCode(dressCode) {
   return dressCode ?? 'Sin código de vestimenta'
 }
 
-// Código de la entrada para el QR (simulado): "AKK-crater-482913"
+// Código de la entrada para el QR (simulado): "AKK-mago-de-oz-482913"
 export function crearCodigoEntrada(concierto) {
   const numero = Math.floor(100000 + Math.random() * 900000)
   return `AKK-${concierto.id}-${numero}`

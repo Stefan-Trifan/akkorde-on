@@ -73,11 +73,10 @@ function ArtistDetail({
 
       <div className="flex flex-col gap-6 px-5 pb-8">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-acento">
-            🎤 {artista.genero} · {artista.origen}
-          </span>
+          <span className="text-xs font-bold uppercase tracking-widest text-acento">🎤 {artista.genero}</span>
           <h1 className="text-3xl font-extrabold text-texto">{artista.nombre}</h1>
-          <p className="mt-2 text-suave">{artista.descripcion}</p>
+          {/* Artistas reales, conciertos inventados: se dice claramente */}
+          <p className="mt-2 text-xs text-suave">Demo: fechas, salas y precios de ejemplo, no anunciados de verdad.</p>
         </div>
 
         <button

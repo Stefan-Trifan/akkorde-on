@@ -38,11 +38,11 @@ export const asistencia = {
   'opium-dinner-club': ['irene.v', 'hugo.n'],
   'puri-cabaret': ['lucia.mg', 'dani.cb'],
   // Conciertos de las giras (giras.js)
-  'aurora-vega-madrid': ['lucia.mg', 'marcos_r', 'sofia.p'],
-  'nilo-sur-madrid': ['irene.v'],
-  'los-satelites-madrid': ['dani.cb', 'hugo.n'],
-  'bruma-madrid': ['marcos_r'],
-  'los-satelites-alcala': ['lucia.mg'],
+  'bad-bunny-madrid': ['lucia.mg', 'marcos_r', 'sofia.p'],
+  'lucho-rk-madrid': ['irene.v'],
+  'quevedo-madrid': ['dani.cb', 'hugo.n'],
+  'la-pantera-madrid': ['marcos_r'],
+  'quevedo-alcala': ['lucia.mg'],
 }
 
 // Busca un usuario por su id

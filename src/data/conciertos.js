@@ -1,95 +1,96 @@
 // Conciertos de ejemplo para la demo (Sprint 2)
-// Los artistas son inventados; las salas son reales de Madrid.
+// Artistas reales; las salas son reales de Madrid. Fechas, salas y precios son de ejemplo (demo):
+// no son conciertos anunciados de verdad.
 // precio en euros; fecha en formato AAAA-MM-DD.
 
-import losKilometros from '../assets/conciertos/los-kilometros.svg'
-import trioMalasanaJazz from '../assets/conciertos/trio-malasana-jazz.svg'
-import neonHabanero from '../assets/conciertos/neon-habanero.svg'
-import dunaRoja from '../assets/conciertos/duna-roja.svg'
-import crater from '../assets/conciertos/crater.svg'
-import mcLavapies from '../assets/conciertos/mc-lavapies.svg'
-import polarisClub from '../assets/conciertos/polaris-club.svg'
-import lasHermanasBrisa from '../assets/conciertos/las-hermanas-brisa.svg'
+import ardeBogota from '../assets/conciertos/arde-bogota.svg'
+import relsB from '../assets/conciertos/rels-b.svg'
+import mykeTowers from '../assets/conciertos/myke-towers.svg'
+import dellafuente from '../assets/conciertos/dellafuente.svg'
+import magoDeOz from '../assets/conciertos/mago-de-oz.svg'
+import natosYWaor from '../assets/conciertos/natos-y-waor.svg'
+import bizarrap from '../assets/conciertos/bizarrap.svg'
+import aitana from '../assets/conciertos/aitana.svg'
 
 export const conciertos = [
   {
-    id: 'los-kilometros',
-    nombre: 'Los Kilómetros',
+    id: 'arde-bogota',
+    nombre: 'Arde Bogotá',
     sala: 'Sala El Sol',
     fecha: '2026-11-13',
     hora: '21:00',
-    genero: 'Indie rock',
+    genero: 'Rock',
     precio: 18,
-    imagen: losKilometros,
+    imagen: ardeBogota,
   },
   {
-    id: 'trio-malasana-jazz',
-    nombre: 'Trío Malasaña Jazz',
+    id: 'rels-b',
+    nombre: 'Rels B',
     sala: 'Café Berlín',
     fecha: '2026-11-19',
     hora: '21:30',
-    genero: 'Jazz',
+    genero: 'R&B',
     precio: 15,
-    imagen: trioMalasanaJazz,
+    imagen: relsB,
   },
   {
-    id: 'neon-habanero',
-    nombre: 'Neón Habanero',
+    id: 'myke-towers',
+    nombre: 'Myke Towers',
     sala: 'La Riviera',
     fecha: '2026-11-21',
     hora: '21:00',
-    genero: 'Pop latino',
+    genero: 'Reguetón',
     precio: 28,
-    imagen: neonHabanero,
+    imagen: mykeTowers,
   },
   {
-    id: 'duna-roja',
-    nombre: 'Duna Roja',
+    id: 'dellafuente',
+    nombre: 'Dellafuente',
     sala: 'Galileo Galilei',
     fecha: '2026-11-27',
     hora: '21:00',
-    genero: 'Flamenco fusión',
+    genero: 'Flamenco urbano',
     precio: 22,
-    imagen: dunaRoja,
+    imagen: dellafuente,
   },
   {
-    id: 'crater',
-    nombre: 'Cráter',
+    id: 'mago-de-oz',
+    nombre: 'Mägo de Oz',
     sala: 'Sala Copérnico',
     fecha: '2026-11-28',
     hora: '20:30',
     genero: 'Metal',
     precio: 20,
-    imagen: crater,
+    imagen: magoDeOz,
   },
   {
-    id: 'mc-lavapies',
-    nombre: 'MC Lavapiés',
+    id: 'natos-y-waor',
+    nombre: 'Natos y Waor',
     sala: 'Clamores',
     fecha: '2026-12-03',
     hora: '21:30',
     genero: 'Rap',
     precio: 16,
-    imagen: mcLavapies,
+    imagen: natosYWaor,
   },
   {
-    id: 'polaris-club',
-    nombre: 'Polaris Club',
+    id: 'bizarrap',
+    nombre: 'Bizarrap',
     sala: 'Sala But',
     fecha: '2026-12-05',
     hora: '23:00',
     genero: 'Electrónica',
     precio: 25,
-    imagen: polarisClub,
+    imagen: bizarrap,
   },
   {
-    id: 'las-hermanas-brisa',
-    nombre: 'Las Hermanas Brisa',
+    id: 'aitana',
+    nombre: 'Aitana',
     sala: 'Teatro Barceló',
     fecha: '2026-12-11',
     hora: '21:00',
     genero: 'Pop',
     precio: 24,
-    imagen: lasHermanasBrisa,
+    imagen: aitana,
   },
 ]
