@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { QRCodeSVG } from 'qrcode.react'
+import QrRedondeado from '../components/QrRedondeado.jsx'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
+import Avatar from '../components/Avatar.jsx'
+import { nombreCompleto } from '../data/amigos.js'
 import { GASTOS_GESTION, formatearFecha, formatearPrecio, precioFinal } from './formato.js'
 import { HORAS_ANTES_QR, formatearMomento, momentoVerQr, puedeVerQr } from './tiempo.js'
 
@@ -37,20 +40,33 @@ function Confirmacion({ titulo, textoSi, onConfirmar, onCancelar, children }) {
   )
 }
 
-// Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender
-function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
+// Una entrada abierta desde «Mis entradas», con el QR difuminado hasta 1 h antes y opción de revender.
+// Se enseña dentro de TicketCarrusel, que pone la cabecera y las flechas.
+function Ticket({ entrada, amigos = [], onRevender, onQuitarReventa, onEnviar }) {
   const [qrVisible, setQrVisible] = useState(false)
-  // Qué se está confirmando: null, 'revender' o 'quitar'
+  // Qué se está confirmando: null, 'revender', 'quitar' o 'enviar'
   const [confirmando, setConfirmando] = useState(null)
-  // Solo para la demo: hacer como si faltara 1 h para el concierto
+  // Nombre de la persona a la que se envía la entrada
+  const [destinatario, setDestinatario] = useState('')
+  // DEMO: hacer como si faltara 1 h para el concierto (botón 🧪 de abajo)
   const [simularHora, setSimularHora] = useState(false)
 
-  const { concierto, codigo, enReventa, gastosExtra = 0 } = entrada
-  const pagado = precioFinal(concierto.precio)
-  const recibes = pagado - GASTOS_GESTION
+  const { concierto, codigo, enReventa, gastosExtra = 0, enviadaA } = entrada
+  // Las entradas de antes de las listas no traen precioPagado: se usa el precio del concierto
+  const pagado = entrada.precioPagado !== undefined ? entrada.precioPagado : precioFinal(concierto.precio)
+  // Solo se revenden las entradas normales (las listas y los reservados van a nombre de alguien)
+  const sePuedeRevender = (entrada.revendible ?? true) && pagado > 0
+  const recibes = sePuedeRevender ? pagado - GASTOS_GESTION : 0
   const ahora = simularHora ? momentoVerQr(concierto) : new Date()
   const sePuedeVer = puedeVerQr(concierto, ahora)
-  const mostrarQr = qrVisible && sePuedeVer && !enReventa
+  const mostrarQr = qrVisible && sePuedeVer && !enReventa && !enviadaA
+
+  // Envía la entrada a otra persona (simulado): deja de estar disponible en este móvil
+  function enviar() {
+    onEnviar(destinatario.trim())
+    setConfirmando(null)
+    setQrVisible(false)
+  }
 
   // Pone la entrada a la venta y vuelve a esconder el QR
   function revender() {
@@ -66,28 +82,60 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
   }
 
   return (
-    <div className="flex flex-col gap-5 p-5">
-      <button type="button" onClick={onVolver} className="self-start pt-4 text-suave hover:text-texto">
-        ← Mis entradas
-      </button>
-      <h1 className="text-2xl font-extrabold text-texto">Mi entrada</h1>
+    <div className="flex flex-col gap-5 px-5 pb-5">
 
-      <article className="overflow-hidden rounded-3xl bg-crema text-fondo">
-        <img src={concierto.imagen} alt="" className="aspect-[8/3] w-full object-cover" />
-        <div className="flex flex-col items-center gap-3 p-5">
-          <div className="text-center">
-            <p className="text-xl font-extrabold">{concierto.nombre}</p>
-            <p className="text-sm">
-              {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
-            </p>
-          </div>
+      {/* Entrada tipo «pase»: el color de la discoteca tiñe toda la tarjeta y se funde con el fondo oscuro */}
+      <article className="relative isolate overflow-hidden rounded-[2rem] text-texto shadow-2xl ring-1 ring-white/10">
+        {/* Fondo: la imagen del evento muy difuminada + capa oscura que baja hacia el color de la app */}
+        <img
+          src={concierto.imagen}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-20 h-full w-full scale-150 object-cover opacity-70 blur-2xl"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-fondo/10 via-fondo/60 to-fondo/95" />
 
+        {/* Cabecera: la imagen se desvanece hacia abajo en vez de cortar en seco */}
+        <img
+          src={concierto.imagen}
+          alt=""
+          className="aspect-[8/3] w-full object-cover [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
+        />
+
+        <div className="-mt-6 flex flex-col items-center gap-1 px-5 pb-4 text-center">
+          <p className="text-2xl font-extrabold drop-shadow">{concierto.nombre}</p>
+          <p className="text-sm text-texto/80">
+            {concierto.sala} · {formatearFecha(concierto.fecha)} · {concierto.hora}
+          </p>
+          {entrada.opcion && (
+            <p className="mt-2 rounded-full bg-acento px-3 py-0.5 text-xs font-bold text-fondo">{entrada.opcion}</p>
+          )}
+          {entrada.asistente && <p className="mt-1 text-sm font-semibold">A nombre de {entrada.asistente}</p>}
+          {entrada.detalle && <p className="text-xs text-texto/70">Incluye: {entrada.detalle}</p>}
+          {entrada.aviso && <p className="text-xs font-semibold text-crema">⏰ {entrada.aviso}</p>}
+        </div>
+
+        {/* Línea de corte con dos muescas, como una entrada de papel */}
+        <div className="relative flex items-center" aria-hidden="true">
+          <span className="absolute -left-3 h-6 w-6 rounded-full bg-fondo" />
+          <span className="mx-5 w-full border-t-2 border-dashed border-white/20" />
+          <span className="absolute -right-3 h-6 w-6 rounded-full bg-fondo" />
+        </div>
+
+        <div className="flex flex-col items-center gap-3 px-5 pb-6 pt-5">
           <div className="relative">
-            <div className={`transition duration-500 ${mostrarQr ? '' : 'blur-md'}`} aria-hidden={!mostrarQr}>
-              <QRCodeSVG value={codigo} size={176} />
+            <div aria-hidden={!mostrarQr}>
+              <QrRedondeado valor={codigo} tamano={184} difuminado={!mostrarQr} etiqueta={`QR de la entrada ${codigo}`} />
             </div>
-            {enReventa ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-fondo/90 p-3 text-center text-acento">
+            {enviadaA ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-[1.75rem] bg-fondo/90 p-3 text-center text-acento">
+                <span className="text-2xl" aria-hidden="true">
+                  📤
+                </span>
+                <p className="text-sm font-bold">Enviada a {enviadaA}</p>
+              </div>
+            ) : enReventa ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-[1.75rem] bg-fondo/90 p-3 text-center text-acento">
                 <span className="text-2xl" aria-hidden="true">
                   🔄
                 </span>
@@ -95,23 +143,25 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
               </div>
             ) : (
               !mostrarQr && (
-                <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-bold">
-                  {sePuedeVer ? 'Pulsa «Ver QR» abajo' : `Se verá ${HORAS_ANTES_QR} h antes`}
+                <p className="absolute inset-0 flex items-center justify-center px-4 text-center">
+                  <span className="rounded-full bg-fondo px-3 py-1.5 text-xs font-bold text-acento shadow">
+                    🔒 {sePuedeVer ? 'Pulsa «Ver QR» abajo' : `Se verá ${HORAS_ANTES_QR} h antes`}
+                  </span>
                 </p>
               )
             )}
           </div>
 
-          <p className="font-mono text-xs">{mostrarQr ? codigo : 'AKK-••••••'}</p>
-          <p className="text-xs">
-            Pagado: {formatearPrecio(pagado)}
+          <p className="font-mono text-xs text-texto/80">{mostrarQr ? codigo : 'AKK-••••••'}</p>
+          <p className="text-xs text-texto/70">
+            {pagado === null ? 'Incluida en el reservado' : pagado === 0 ? 'Gratis' : `Pagado: ${formatearPrecio(pagado)}`}
             {gastosExtra > 0 && ` + ${formatearPrecio(gastosExtra)} por quitar la reventa`} · válida una sola vez
           </p>
         </div>
       </article>
 
       <p className="text-center text-xs text-suave">
-        Por seguridad, tu QR está difuminado hasta {HORAS_ANTES_QR} h antes del concierto. Desliza para ver las opciones.
+        Por seguridad, tu QR está difuminado hasta {HORAS_ANTES_QR} h antes del concierto. Baja para ver las opciones.
       </p>
 
       <section className="flex flex-col gap-3 pt-6">
@@ -149,7 +199,66 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
           </Confirmacion>
         )}
 
-        {!confirmando && enReventa && (
+        {confirmando === 'enviar' && (
+          <Confirmacion
+            titulo="¿A quién se la envías?"
+            textoSi="Enviar"
+            onConfirmar={() => destinatario.trim() && enviar()}
+            onCancelar={() => setConfirmando(null)}
+          >
+            <p className="text-sm text-suave">
+              Le llegará a su Akkorde-on con su propio QR y dejará de estar en tu móvil.
+              {entrada.tipo !== 'entrada' && ' Al ser nominal, quedará a su nombre.'}
+            </p>
+            {amigos.length > 0 && (
+              <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto" aria-label="Tus amigos">
+                {amigos.map((amigo) => {
+                  const nombre = nombreCompleto(amigo)
+                  const elegido = destinatario === nombre
+                  return (
+                    <li key={amigo.id}>
+                      <button
+                        type="button"
+                        onClick={() => setDestinatario(elegido ? '' : nombre)}
+                        aria-pressed={elegido}
+                        className={`flex w-full items-center gap-3 rounded-xl p-2 text-left transition ${
+                          elegido ? 'bg-acento/15 ring-1 ring-acento' : 'hover:bg-fondo'
+                        }`}
+                      >
+                        <Avatar persona={amigo} tamano="s" />
+                        <span className="flex-1 text-sm text-texto">{nombre}</span>
+                        <span className={`text-sm ${elegido ? 'text-acento' : 'text-transparent'}`} aria-hidden="true">
+                          ✓
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-suave">
+                {amigos.length > 0 ? 'O a otra persona (le llegará una invitación a Akkorde-on)' : 'Nombre de la persona'}
+              </span>
+              <input
+                type="text"
+                value={amigos.some((amigo) => nombreCompleto(amigo) === destinatario) ? '' : destinatario}
+                onChange={(evento) => setDestinatario(evento.target.value)}
+                placeholder="Nombre y apellidos"
+                aria-label="Nombre de la persona"
+                className="rounded-xl border border-borde bg-fondo px-3 py-2 text-texto placeholder:text-suave focus:border-acento focus:outline-none"
+              />
+            </label>
+          </Confirmacion>
+        )}
+
+        {!confirmando && enviadaA && (
+          <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
+            Has enviado esta entrada a <strong className="text-texto">{enviadaA}</strong>. Ya la tiene en su móvil.
+          </p>
+        )}
+
+        {!confirmando && !enviadaA && enReventa && (
           <>
             <p className="rounded-2xl border border-borde p-4 text-sm text-suave">
               Tu entrada está a la venta por {formatearPrecio(pagado)}. Todavía no la ha comprado nadie; cuando alguien la
@@ -161,7 +270,7 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
           </>
         )}
 
-        {!confirmando && !enReventa && (
+        {!confirmando && !enviadaA && !enReventa && (
           <>
             <Boton principal disabled={!sePuedeVer} onClick={() => setQrVisible(!qrVisible)}>
               {qrVisible ? 'Ocultar QR' : 'Ver QR'}
@@ -169,19 +278,25 @@ function Ticket({ entrada, onVolver, onRevender, onQuitarReventa }) {
             {!sePuedeVer && (
               <p className="text-center text-xs text-suave">Podrás verlo el {formatearMomento(momentoVerQr(concierto))}.</p>
             )}
-            <Boton onClick={() => setConfirmando('revender')}>Revender entrada</Boton>
+            <Boton onClick={() => setConfirmando('enviar')}>📤 Enviar a un amigo</Boton>
+            {sePuedeRevender && <Boton onClick={() => setConfirmando('revender')}>Revender entrada</Boton>}
           </>
         )}
 
-        <button
-          type="button"
-          onClick={() => setSimularHora(!simularHora)}
-          aria-pressed={simularHora}
-          className="mt-4 rounded-2xl border border-dashed border-borde p-3 text-xs text-suave hover:text-texto"
-        >
-          🧪 Demo: {simularHora ? 'volver a la hora real' : `simular que falta ${HORAS_ANTES_QR} h para el concierto`}
-        </button>
-        <p className="text-center text-xs text-suave">Demo: no es una entrada real ni se cobra nada.</p>
+        {/* DEMO: botón para ver el QR sin esperar y aviso de que no es real */}
+        {MODO_DEMO && (
+          <>
+            <button
+              type="button"
+              onClick={() => setSimularHora(!simularHora)}
+              aria-pressed={simularHora}
+              className="mt-4 rounded-2xl border border-dashed border-borde p-3 text-xs text-suave hover:text-texto"
+            >
+              🧪 Demo: {simularHora ? 'volver a la hora real' : `simular que falta ${HORAS_ANTES_QR} h para el concierto`}
+            </button>
+            <p className="text-center text-xs text-suave">Demo: no es una entrada real ni se cobra nada.</p>
+          </>
+        )}
       </section>
     </div>
   )

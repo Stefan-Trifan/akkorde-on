@@ -3,8 +3,22 @@ import Home from './Home.jsx'
 import Search from './Search.jsx'
 import EventDetail from './EventDetail.jsx'
 import Checkout from './Checkout.jsx'
+import ElegirEntradas from './ElegirEntradas.jsx'
 import MyTickets from './MyTickets.jsx'
-import Ticket from './Ticket.jsx'
+import TicketCarrusel from './TicketCarrusel.jsx'
+import VenueDetail from './VenueDetail.jsx'
+import ArtistDetail from './ArtistDetail.jsx'
+import AvisoArtista from './AvisoArtista.jsx'
+import Avisos from './Avisos.jsx'
+import { debeAvisar } from './avisos.js'
+import { crearAnuncioDemo } from '../demo/anunciosDemo.js' // DEMO:
+import Amigos from './Amigos.jsx'
+import { AMIGOS_INICIALES, SOLICITUDES_INICIALES, asistencia, usuarioPorId } from '../data/amigos.js'
+import { eventos } from '../data/eventos.js'
+import { esProximo } from './tiempo.js'
+import { MODO_DEMO } from '../demo/config.js' // DEMO:
+import { crearEntradasDemo } from '../demo/entradasDemo.js' // DEMO:
+import { UBICACION_INICIAL } from '../data/zonas.js'
 import { GASTOS_GESTION, TODOS, crearCodigoEntrada } from './formato.js'
 import { DISTANCIA_MAX_KM } from './distancia.js'
 
@@ -14,38 +28,184 @@ const PESTANAS = [
   { pantalla: 'inicio', texto: 'Inicio', icono: '🏠' },
   { pantalla: 'buscar', texto: 'Buscar', icono: '🔍' },
   { pantalla: 'entradas', texto: 'Mis entradas', icono: '🎟️' },
+  { pantalla: 'amigos', texto: 'Amigos', icono: '👥' },
   { pantalla: 'avisame', texto: 'Avísame', icono: '🔔' },
 ]
+// DEMO: segundos que tarda en «aceptar» una solicitud de amistad (con backend, lo decide la otra persona)
+const SEGUNDOS_ACEPTAR = 3
 
 // Vista App: la demo de Akkorde-on como app de móvil
 function AppView({ onAbrirAvisame }) {
   const [pantalla, setPantalla] = useState('inicio')
   const [conciertoElegido, setConciertoElegido] = useState(null)
-  // Todas las entradas compradas y la que está abierta (null = se ve la lista)
-  const [entradas, setEntradas] = useState([])
-  const [idAbierta, setIdAbierta] = useState(null)
+  // Todas las entradas compradas y las que se están viendo en el carrusel ([] = se ve la lista)
+  // DEMO: en modo demo se empieza con unas entradas de ejemplo (ver src/demo/entradasDemo.js)
+  const [entradas, setEntradas] = useState(() => (MODO_DEMO ? crearEntradasDemo() : []))
+  const [idsAbiertos, setIdsAbiertos] = useState([])
   // Pantalla desde la que se abrió la ficha, para que «Volver» regrese ahí
   const [origen, setOrigen] = useState('inicio')
   // Filtro de la búsqueda; vive aquí para no perderlo al volver de la ficha
   const [genero, setGenero] = useState(TODOS)
   // Filtro por distancia en km (empieza al máximo: se ven todos)
   const [radio, setRadio] = useState(DISTANCIA_MAX_KM)
+  // Punto desde el que se miden las distancias ({ nombre, lat, lng }): una zona o el GPS
+  const [ubicacion, setUbicacion] = useState(UBICACION_INICIAL)
+  // Filtro por tipo de plan ('todo', 'conciertos' o 'fiestas') y por artista o DJ del cartel
+  const [tipoPlan, setTipoPlan] = useState('todo')
+  const [artista, setArtista] = useState(TODOS)
+  // Filtro por sala o discoteca y por fecha ('todas', 'hoy' o 'finde')
+  const [local, setLocal] = useState(TODOS)
+  const [cuando, setCuando] = useState('todas')
+  // Ficha de local abierta y pantalla a la que vuelve
+  const [localElegido, setLocalElegido] = useState(null)
+  const [origenLocal, setOrigenLocal] = useState('buscar')
+  // Ficha de artista abierta y pantalla a la que vuelve
+  const [artistaElegido, setArtistaElegido] = useState(null)
+  const [origenArtista, setOrigenArtista] = useState('buscar')
+  // Lo elegido en «Elegir entradas» antes de pagar (ver venta.js)
+  const [carrito, setCarrito] = useState(null)
+  // Datos del comprador si marcó «Recordar mis datos» (solo en memoria, se pierden al recargar)
+  const [datosGuardados, setDatosGuardados] = useState(null)
 
-  const entradaAbierta = entradas.find((entrada) => entrada.id === idAbierta)
+  // ---------- Amigos (ver data/amigos.js) ----------
+  const [amigos, setAmigos] = useState(AMIGOS_INICIALES)
+  const [recibidas, setRecibidas] = useState(SOLICITUDES_INICIALES)
+  const [enviadas, setEnviadas] = useState([])
+  const perfilesAmigos = amigos.map(usuarioPorId)
+
+  // Envía una solicitud. DEMO: la otra persona la acepta sola a los 3 segundos (con backend, quitar el setTimeout)
+  function enviarSolicitud(id) {
+    setEnviadas((lista) => [...lista, id])
+    setTimeout(() => {
+      setEnviadas((lista) => lista.filter((otro) => otro !== id))
+      setAmigos((lista) => (lista.includes(id) ? lista : [...lista, id]))
+    }, SEGUNDOS_ACEPTAR * 1000)
+  }
+
+  function aceptarSolicitud(id) {
+    setRecibidas((lista) => lista.filter((otro) => otro !== id))
+    setAmigos((lista) => (lista.includes(id) ? lista : [...lista, id]))
+  }
+
+  // Amigos que ya tienen entrada para un evento
+  function amigosQueVan(evento) {
+    return (asistencia[evento.id] ?? []).filter((id) => amigos.includes(id)).map(usuarioPorId)
+  }
+
+  // Próximos planes de un amigo: nombres de los eventos a los que va
+  function planesDe(id) {
+    return eventos
+      .filter((evento) => esProximo(evento) && (asistencia[evento.id] ?? []).includes(id))
+      .map((evento) => evento.nombre)
+  }
+
+  // Entradas abiertas, en el orden en que se abrieron (aunque una se envíe, sigue en el carrusel hasta salir)
+  const entradasAbiertas = idsAbiertos.map((id) => entradas.find((entrada) => entrada.id === id)).filter(Boolean)
+
+  // ---------- Favoritos y gustos ----------
+  // Salas y discotecas favoritas (♥) y eventos que se han abierto (para «Quizás te interese»)
+  const [favoritos, setFavoritos] = useState([])
+  const [vistos, setVistos] = useState([])
+
+  function cambiarFavorito(nombre) {
+    setFavoritos((lista) => (lista.includes(nombre) ? lista.filter((otro) => otro !== nombre) : [...lista, nombre]))
+  }
+
+  // Artistas que sigues (♥), por id: sus conciertos salen en Inicio y cuentan en las recomendaciones
+  const [artistasFavoritos, setArtistasFavoritos] = useState([])
+
+  function cambiarArtistaFavorito(id) {
+    setArtistasFavoritos((lista) => (lista.includes(id) ? lista.filter((otro) => otro !== id) : [...lista, id]))
+  }
+
+  // ---------- «Avísame si viene» (ver avisos.js) ----------
+  // Aviso de cada artista { [id]: { alcance, km, comunidad } } y bandeja de avisos recibidos
+  const [alertas, setAlertas] = useState({})
+  const [avisos, setAvisos] = useState([])
+  // DEMO: conciertos que se han «anunciado» con el botón de simular (con backend vendrían del servidor)
+  const [anunciados, setAnunciados] = useState([])
+  const noLeidos = avisos.filter((aviso) => !aviso.leido).length
+
+  // Activa, cambia o quita (aviso = null) el aviso de una artista
+  function cambiarAlerta(id, aviso) {
+    setAlertas((actuales) => {
+      const copia = { ...actuales }
+      if (aviso) copia[id] = aviso
+      else delete copia[id]
+      return copia
+    })
+  }
+
+  // DEMO: la artista anuncia un concierto; si cumple su aviso, llega a la bandeja.
+  // Devuelve { concierto, avisa, motivo } para que la ficha enseñe qué ha pasado
+  function anunciarConcierto(artista) {
+    const yaAnunciados = anunciados.filter((concierto) => concierto.nombre === artista.nombre).length
+    const concierto = crearAnuncioDemo(artista, yaAnunciados)
+    setAnunciados((lista) => [...lista, concierto])
+    const resultado = debeAvisar(alertas[artista.id], concierto, ubicacion)
+    if (resultado.avisa) {
+      setAvisos((lista) => [{ id: concierto.id, concierto, motivo: resultado.motivo, leido: false }, ...lista])
+    }
+    return { concierto, ...resultado }
+  }
+
+  // Abre la bandeja y da todos los avisos por vistos
+  function verAvisos() {
+    setAvisos((lista) => lista.map((aviso) => ({ ...aviso, leido: true })))
+    setPantalla('avisos')
+  }
 
   // Abre la ficha del concierto pulsado
   function elegirConcierto(concierto) {
+    setVistos((lista) => (lista.includes(concierto.id) ? lista : [...lista, concierto.id]))
     setConciertoElegido(concierto)
     setOrigen(pantalla)
     setPantalla('concierto')
   }
 
-  // Añade una entrada nueva a la lista y la deja abierta para verla
-  function comprarEntrada() {
-    const codigo = crearCodigoEntrada(conciertoElegido)
-    const nueva = { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0 }
-    setEntradas([...entradas, nueva])
-    setIdAbierta(codigo)
+  // Vuelve los filtros de búsqueda a como estaban al abrir la app (la ubicación se mantiene)
+  function limpiarFiltros() {
+    setTipoPlan('todo')
+    setArtista(TODOS)
+    setGenero(TODOS)
+    setRadio(DISTANCIA_MAX_KM)
+    setLocal(TODOS)
+    setCuando('todas')
+  }
+
+  // Abre la ficha de una sala o discoteca. Si se abre desde un evento, «Volver» salta
+  // a donde se abrió ese evento (así no se crea un bucle evento ↔ local)
+  function verLocal(nombre) {
+    setLocalElegido(nombre)
+    const desde = pantalla === 'concierto' ? origen : pantalla
+    // Si el evento se abrió desde una ficha de local, se mantiene el origen que ya había
+    if (desde !== 'local') setOrigenLocal(desde)
+    setPantalla('local')
+  }
+
+  // Abre la ficha de una artista. Igual que con los locales: si se abre desde un concierto,
+  // «Volver» salta a donde se abrió ese concierto (sin bucle concierto ↔ artista)
+  function verArtista(artista) {
+    setArtistaElegido(artista)
+    const desde = pantalla === 'concierto' ? origen : pantalla
+    if (desde !== 'artista') setOrigenArtista(desde)
+    setPantalla('artista')
+  }
+
+  // Pasa de «Elegir entradas» al pago con lo elegido
+  function irAPagar(nuevoCarrito) {
+    setCarrito(nuevoCarrito)
+    setPantalla('compra')
+  }
+
+  // Crea una entrada (con su QR) por cada persona de la compra
+  function comprarEntradas(plazas) {
+    const nuevas = plazas.map((plaza) => {
+      const codigo = crearCodigoEntrada(conciertoElegido)
+      return { id: codigo, codigo, concierto: conciertoElegido, enReventa: false, gastosExtra: 0, enviadaA: null, ...plaza }
+    })
+    setEntradas([...entradas, ...nuevas])
+    setIdsAbiertos([])
   }
 
   // Cambia algunos datos de una entrada concreta
@@ -65,48 +225,146 @@ function AppView({ onAbrirAvisame }) {
       onAbrirAvisame()
       return
     }
-    if (destino === 'entradas') setIdAbierta(null)
+    if (destino === 'entradas') setIdsAbiertos([])
     setPantalla(destino)
   }
 
   return (
     <div className="flex h-full flex-col bg-fondo text-texto">
-      <main className="flex-1 overflow-y-auto">
-        {pantalla === 'inicio' && <Home onElegir={elegirConcierto} />}
+      {/* key = pantalla: al cambiar de pantalla se empieza arriba del todo, no donde se quedó la anterior */}
+      <main key={pantalla} className="flex-1 overflow-y-auto">
+        {pantalla === 'inicio' && (
+          <Home
+            ubicacion={ubicacion}
+            favoritos={favoritos}
+            artistasFavoritos={artistasFavoritos}
+            entradas={entradas}
+            vistos={vistos}
+            amigosQueVan={amigosQueVan}
+            onCambiarFavorito={cambiarFavorito}
+            onCambiarArtistaFavorito={cambiarArtistaFavorito}
+            onElegir={elegirConcierto}
+            onVerLocal={verLocal}
+            onVerArtista={verArtista}
+            noLeidos={noLeidos}
+            onVerAvisos={verAvisos}
+          />
+        )}
+        {pantalla === 'avisos' && (
+          <Avisos avisos={avisos} onElegir={elegirConcierto} onVolver={() => setPantalla('inicio')} />
+        )}
         {pantalla === 'buscar' && (
           <Search
+            tipoPlan={tipoPlan}
+            onCambiarTipoPlan={setTipoPlan}
+            artista={artista}
+            onCambiarArtista={setArtista}
             genero={genero}
             onCambiarGenero={setGenero}
             radio={radio}
             onCambiarRadio={setRadio}
+            ubicacion={ubicacion}
+            onCambiarUbicacion={setUbicacion}
+            local={local}
+            onCambiarLocal={setLocal}
+            cuando={cuando}
+            onCambiarCuando={setCuando}
+            onLimpiar={limpiarFiltros}
+            favoritos={favoritos}
+            onCambiarFavorito={cambiarFavorito}
+            artistasFavoritos={artistasFavoritos}
+            onCambiarArtistaFavorito={cambiarArtistaFavorito}
             onElegir={elegirConcierto}
+            onVerLocal={verLocal}
+            onVerArtista={verArtista}
+          />
+        )}
+        {pantalla === 'artista' && (
+          <ArtistDetail
+            artista={artistaElegido}
+            ubicacion={ubicacion}
+            esFavorita={artistasFavoritos.includes(artistaElegido.id)}
+            onCambiarFavorita={() => cambiarArtistaFavorito(artistaElegido.id)}
+            extra={anunciados}
+            onElegir={elegirConcierto}
+            onVolver={() => setPantalla(origenArtista)}
+          >
+            <AvisoArtista
+              key={artistaElegido.id}
+              artista={artistaElegido}
+              aviso={alertas[artistaElegido.id] ?? null}
+              ubicacion={ubicacion}
+              extra={anunciados}
+              onCambiar={(aviso) => cambiarAlerta(artistaElegido.id, aviso)}
+              onSimular={() => anunciarConcierto(artistaElegido)}
+            />
+          </ArtistDetail>
+        )}
+        {pantalla === 'local' && (
+          <VenueDetail
+            nombre={localElegido}
+            ubicacion={ubicacion}
+            esFavorito={favoritos.includes(localElegido)}
+            onCambiarFavorito={() => cambiarFavorito(localElegido)}
+            onElegir={elegirConcierto}
+            onVolver={() => setPantalla(origenLocal)}
           />
         )}
         {pantalla === 'concierto' && (
           <EventDetail
             concierto={conciertoElegido}
-            onComprar={() => setPantalla('compra')}
+            amigosQueVan={amigosQueVan(conciertoElegido)}
+            esFavorito={favoritos.includes(conciertoElegido.sala)}
+            onCambiarFavorito={() => cambiarFavorito(conciertoElegido.sala)}
+            onComprar={() => setPantalla('opciones')}
             onVolver={() => setPantalla(origen)}
+            onVerLocal={verLocal}
+            onVerArtista={verArtista}
+          />
+        )}
+        {pantalla === 'opciones' && (
+          <ElegirEntradas
+            concierto={conciertoElegido}
+            onContinuar={irAPagar}
+            onVolver={() => setPantalla('concierto')}
           />
         )}
         {pantalla === 'compra' && (
           <Checkout
             concierto={conciertoElegido}
-            onPagar={comprarEntrada}
-            onVerEntrada={() => setPantalla('entradas')}
-            onVolver={() => setPantalla('concierto')}
+            carrito={carrito}
+            datosGuardados={datosGuardados}
+            amigos={perfilesAmigos}
+            onGuardarDatos={setDatosGuardados}
+            onPagar={comprarEntradas}
+            onVerEntradas={() => setPantalla('entradas')}
+            onVolver={() => setPantalla('opciones')}
           />
         )}
-        {pantalla === 'entradas' && !entradaAbierta && (
-          <MyTickets entradas={entradas} onAbrir={setIdAbierta} onBuscar={() => setPantalla('buscar')} />
+        {pantalla === 'entradas' && entradasAbiertas.length === 0 && (
+          <MyTickets entradas={entradas} onAbrir={setIdsAbiertos} onBuscar={() => setPantalla('buscar')} />
         )}
-        {pantalla === 'entradas' && entradaAbierta && (
-          <Ticket
-            key={entradaAbierta.id}
-            entrada={entradaAbierta}
-            onVolver={() => setIdAbierta(null)}
-            onRevender={() => actualizarEntrada(entradaAbierta.id, { enReventa: true })}
-            onQuitarReventa={() => quitarReventa(entradaAbierta)}
+        {pantalla === 'entradas' && entradasAbiertas.length > 0 && (
+          <TicketCarrusel
+            key={idsAbiertos.join()}
+            entradas={entradasAbiertas}
+            onVolver={() => setIdsAbiertos([])}
+            onRevender={(entrada) => actualizarEntrada(entrada.id, { enReventa: true })}
+            onQuitarReventa={quitarReventa}
+            amigos={perfilesAmigos}
+            onEnviar={(entrada, nombre) => actualizarEntrada(entrada.id, { enviadaA: nombre, asistente: nombre })}
+          />
+        )}
+        {pantalla === 'amigos' && (
+          <Amigos
+            amigos={amigos}
+            recibidas={recibidas}
+            enviadas={enviadas}
+            planesDe={planesDe}
+            onEnviarSolicitud={enviarSolicitud}
+            onAceptar={aceptarSolicitud}
+            onRechazar={(id) => setRecibidas((lista) => lista.filter((otro) => otro !== id))}
+            onEliminar={(id) => setAmigos((lista) => lista.filter((otro) => otro !== id))}
           />
         )}
       </main>
@@ -122,10 +380,20 @@ function AppView({ onAbrirAvisame }) {
               pantalla === pestana.pantalla ? 'text-acento' : 'text-suave'
             }`}
           >
-            <span className="text-lg" aria-hidden="true">
+            <span className="relative text-lg" aria-hidden="true">
               {pestana.icono}
+              {pestana.pantalla === 'amigos' && recibidas.length > 0 && (
+                <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-acento px-1 text-[10px] font-bold text-fondo">
+                  {recibidas.length}
+                </span>
+              )}
             </span>
             {pestana.texto}
+            {pestana.pantalla === 'amigos' && recibidas.length > 0 && (
+              <span className="sr-only">
+                , {recibidas.length} {recibidas.length === 1 ? 'solicitud nueva' : 'solicitudes nuevas'}
+              </span>
+            )}
           </button>
         ))}
       </nav>

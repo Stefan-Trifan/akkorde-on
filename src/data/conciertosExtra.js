@@ -1,73 +1,73 @@
 // Conciertos de ejemplo extra para probar el filtro por distancia (Sprint 2).
-// Mismo formato que conciertos.js: artistas inventados en salas reales de Madrid,
-// repartidas entre 1 y 9 km de Sol.
+// Mismo formato que conciertos.js: artistas reales en salas reales de Madrid, repartidas
+// entre 1 y 9 km de Sol. Fechas, salas y precios son de ejemplo (demo).
 
-import lasFarolas from '../assets/conciertos/las-farolas.svg'
-import corrienteAlterna from '../assets/conciertos/corriente-alterna.svg'
-import mareaAlta from '../assets/conciertos/marea-alta.svg'
-import cuartetoRetiro from '../assets/conciertos/cuarteto-retiro.svg'
-import furiaNorte from '../assets/conciertos/furia-norte.svg'
-import ritmoBarrio from '../assets/conciertos/ritmo-barrio.svg'
+import vivaSuecia from '../assets/conciertos/viva-suecia.svg'
+import saiko from '../assets/conciertos/saiko.svg'
+import lolaIndigo from '../assets/conciertos/lola-indigo.svg'
+import cTangana from '../assets/conciertos/c-tangana.svg'
+import robe from '../assets/conciertos/robe.svg'
+import morad from '../assets/conciertos/morad.svg'
 
 export const conciertosExtra = [
   {
-    id: 'las-farolas',
-    nombre: 'Las Farolas',
+    id: 'viva-suecia',
+    nombre: 'Viva Suecia',
     sala: 'Siroco',
     fecha: '2026-11-14',
     hora: '22:00',
-    genero: 'Indie rock',
+    genero: 'Indie',
     precio: 12,
-    imagen: lasFarolas,
+    imagen: vivaSuecia,
   },
   {
-    id: 'corriente-alterna',
-    nombre: 'Corriente Alterna',
+    id: 'saiko',
+    nombre: 'Saiko',
     sala: 'Matadero Madrid',
     fecha: '2026-11-20',
     hora: '23:00',
-    genero: 'Electrónica',
+    genero: 'Reguetón',
     precio: 18,
-    imagen: corrienteAlterna,
+    imagen: saiko,
   },
   {
-    id: 'marea-alta',
-    nombre: 'Marea Alta',
+    id: 'lola-indigo',
+    nombre: 'Lola Índigo',
     sala: 'Movistar Arena',
     fecha: '2026-11-22',
     hora: '21:00',
-    genero: 'Pop latino',
+    genero: 'Pop',
     precio: 45,
-    imagen: mareaAlta,
+    imagen: lolaIndigo,
   },
   {
-    id: 'cuarteto-retiro',
-    nombre: 'Cuarteto Retiro',
+    id: 'c-tangana',
+    nombre: 'C. Tangana',
     sala: 'Auditorio Nacional',
     fecha: '2026-11-29',
     hora: '19:30',
-    genero: 'Jazz',
+    genero: 'Pop',
     precio: 22,
-    imagen: cuartetoRetiro,
+    imagen: cTangana,
   },
   {
-    id: 'furia-norte',
-    nombre: 'Furia Norte',
+    id: 'robe',
+    nombre: 'Robe',
     sala: 'Caja Mágica',
     fecha: '2026-12-06',
     hora: '20:00',
-    genero: 'Metal',
+    genero: 'Rock',
     precio: 35,
-    imagen: furiaNorte,
+    imagen: robe,
   },
   {
-    id: 'ritmo-barrio',
-    nombre: 'Ritmo Barrio',
+    id: 'morad',
+    nombre: 'Morad',
     sala: 'IFEMA Madrid',
     fecha: '2026-12-12',
     hora: '21:30',
     genero: 'Rap',
     precio: 30,
-    imagen: ritmoBarrio,
+    imagen: morad,
   },
 ]

@@ -4,9 +4,9 @@ export const GASTOS_GESTION = 1
 // Opción del filtro de búsqueda que enseña todos los géneros
 export const TODOS = 'Todos'
 
-// Precio final de una entrada: precio del concierto + gastos
+// Precio final de una entrada: precio + gastos (lo gratis no paga gastos)
 export function precioFinal(precio) {
-  return precio + GASTOS_GESTION
+  return precio === 0 ? 0 : precio + GASTOS_GESTION
 }
 
 // Precio en euros al estilo español: 19 → "19 €", 18.5 → "18,50 €"
@@ -24,7 +24,17 @@ export function formatearFecha(fecha) {
   return dia.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
-// Código de la entrada para el QR (simulado): "AKK-crater-482913"
+// Edad mínima para mostrar: 18 → "+18 años"; null → sin requisito
+export function textoEdad(edad) {
+  return edad ? `+${edad} años` : 'Todas las edades'
+}
+
+// Código de vestimenta para mostrar; null → sin requisito
+export function textoDressCode(dressCode) {
+  return dressCode ?? 'Sin código de vestimenta'
+}
+
+// Código de la entrada para el QR (simulado): "AKK-mago-de-oz-482913"
 export function crearCodigoEntrada(concierto) {
   const numero = Math.floor(100000 + Math.random() * 900000)
   return `AKK-${concierto.id}-${numero}`

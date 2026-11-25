@@ -18,6 +18,6 @@
     <rect x="650" y="370" width="14" height="100" rx="7" transform="rotate(-8 657 370)"/>
   </g>
   <text x="48" y="80" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="4" fill="#fff" opacity="0.9">RAP</text>
-  <text x="48" y="190" font-family="Helvetica, Arial, sans-serif" font-size="68" font-weight="800" fill="#fff">MC Lavapiés</text>
-  <text x="48" y="240" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#fff" opacity="0.85">EN DIRECTO · MADRID</text>
+  <text x="48" y="190" font-family="Helvetica, Arial, sans-serif" font-size="68" font-weight="800" fill="#fff">Natos y Waor</text>
+  <text x="48" y="240" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#fff" opacity="0.85">EN DIRECTO · DEMO</text>
 </svg>
