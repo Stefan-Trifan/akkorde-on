@@ -1,4 +1,6 @@
-[**Ver demo en vivo de Akkorde-on**](https://stefan-trifan.github.io/akkorde-on/)
+[**Web de Akkorde-on**](https://stefan-trifan.github.io/akkorde-on/)
+
+[**Demo de la app**](https://stefan-trifan.github.io/akkorde-on/demo/)
 
 ## Modo demo
 
