@@ -1,6 +1,6 @@
 import { encuesta, validacion } from '../data/textos.js'
 
-// datos reales de nuestra encuesta; no hay frases de opinion porque no tenia preguntas abiertas
+// datos reales de nuestra encuesta (95 respuestas: 96 menos una de prueba); no hay frases de opinion porque no tenia preguntas abiertas
 function Testimonials() {
   return (
     <section className="bg-superficie py-16">
