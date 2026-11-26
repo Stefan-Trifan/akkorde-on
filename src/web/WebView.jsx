@@ -6,6 +6,8 @@ import HowItWorks from './HowItWorks.jsx'
 import PriceComparison from './PriceComparison.jsx'
 import Testimonials from './Testimonials.jsx'
 import Faq from './Faq.jsx'
+import Demo from './Demo.jsx'
+import Presentacion from './Presentacion.jsx'
 import Waitlist from './Waitlist.jsx'
 import Footer from './Footer.jsx'
 
@@ -19,9 +21,11 @@ function WebView({ onAbrirAvisame }) {
         <Benefits />
         <Problem />
         <HowItWorks />
+        <Demo />
         <PriceComparison />
         <Testimonials />
         <Faq />
+        <Presentacion />
         <Waitlist onAbrirAvisame={onAbrirAvisame} />
       </main>
       <Footer />

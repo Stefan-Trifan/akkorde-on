@@ -81,3 +81,24 @@ export const avisame = {
   subtitulo: 'Déjanos tu correo y serás de los primeros en saberlo.',
   sinFormulario: 'Muy pronto podrás apuntarte aquí.',
 }
+
+// Sprint 3: lo que ya se puede hacer en la demo (MVP), contado como beneficio
+export const novedades = {
+  titulo: 'Pruébalo ya',
+  subtitulo: 'La demo funciona en el móvil y en el ordenador. Así es comprar con Akkorde-on:',
+  puntos: [
+    { titulo: 'Tus artistas, primero', texto: 'Marca a tus favoritos y verás sus conciertos en Madrid y su gira.' },
+    { titulo: 'Que no se te escape', texto: 'Te avisamos cuando tu artista venga a tu zona.' },
+    { titulo: 'Compra en un minuto', texto: 'Precio final desde el principio, para ti o para tu grupo.' },
+    { titulo: 'Tu entrada, en el móvil', texto: 'QR único y, si no puedes ir, reventa al mismo precio.' },
+  ],
+}
+
+// Sprint 3: citas literales de las entrevistas con clientes reales (las rellena quien hace las entrevistas).
+// Mientras este vacío, la web no enseña la seccion: nada inventado
+export const validacion = {
+  titulo: 'Lo que dicen quienes lo han probado',
+  citas: [
+    // { texto: 'cita literal', quien: 'nombre o iniciales, edad, perfil' },
+  ],
+}

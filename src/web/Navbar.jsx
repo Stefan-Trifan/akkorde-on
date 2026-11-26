@@ -6,6 +6,7 @@ import { URL_DEMO } from '../rutas.js'
 const ENLACES = [
   { href: '#problema', texto: 'El problema' },
   { href: '#como-funciona', texto: 'Cómo funciona' },
+  { href: '#demo', texto: 'La demo' },
   { href: '#precios', texto: 'Precios' },
   { href: '#faq', texto: 'Preguntas' },
 ]
