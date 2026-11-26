@@ -69,11 +69,11 @@ export const comoFunciona = [
 
 export const encuesta = {
   datos: [
-    { porcentaje: '61 %', texto: 'se ha encontrado las entradas agotadas.' },
+    { porcentaje: '64 %', texto: 'se ha encontrado las entradas agotadas.' },
     { porcentaje: '53 %', texto: 'ha visto precios elevados en la reventa.' },
     { porcentaje: '48 %', texto: 'ha renunciado a ir a un evento.' },
   ],
-  fuente: 'Encuesta propia del equipo · 90 respuestas · noviembre de 2026',
+  fuente: 'Encuesta propia del equipo · 95 respuestas · noviembre de 2026',
 }
 
 export const avisame = {
