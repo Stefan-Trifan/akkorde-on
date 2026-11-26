@@ -48,3 +48,7 @@ export const faq = [
     respuesta: 'No. Publicar conciertos en Akkorde-on es gratis para salas y promotores.',
   },
 ]
+
+// Presentacion del Sprint 3 (tarjeta «Incorporar PDF del S3»): poner el PDF en public/ y su nombre aqui,
+// p. ej. 'akkorde-on-sprint3.pdf'. Mientras este vacio, la seccion no sale en la web
+export const PDF_PRESENTACION = ''
